@@ -31,28 +31,28 @@ async function updateExtensions(extensions) {
     tbody.innerHTML = ''
     const tr = extensionsTable.querySelector('tfoot tr')
     for (const ext of extensions) {
-        // TODO: START
         const row = tr.cloneNode(true)
-        console.debug('ext:', ext.icons)
+        let cell
 
-        // TODO: CELL 0
-        const btn = getButton('Manifest', ext.manifest, 'secondary')
-        row.cells[0].style.maxWidth = '84px'
-        row.cells[0].classList.add('m-2')
-        row.cells[0].appendChild(btn)
-        if (ext.optionsUrl) {
-            const btn = getButton('Options', ext.optionsUrl, 'info')
-            row.cells[0].appendChild(btn)
+        // Icon
+        cell = row.cells[0]
+        if (ext.icon) {
+            const icon = document.createElement('img')
+            icon.src = ext.icon
+            icon.width = 32
+            icon.height = 32
+            cell.appendChild(icon)
         }
 
-        // TODO: CELL 1
+        // Name, Version, ID, UUID
+        cell = row.cells[1]
         const fa = faCircle.cloneNode(true)
         if (ext.enabled) {
             fa.classList.add('text-success')
         } else {
             fa.classList.add('text-danger')
         }
-        row.cells[1].appendChild(fa)
+        cell.appendChild(fa)
         if (ext.homepageUrl) {
             const link = document.createElement('a')
             link.textContent = `${ext.name} v${ext.version}`
@@ -61,38 +61,43 @@ async function updateExtensions(extensions) {
             link.rel = 'noopener'
             link.href = ext.homepageUrl
             link.title = ext.homepageUrl
-            row.cells[1].appendChild(link)
+            cell.appendChild(link)
         } else {
-            row.cells[1].appendChild(
+            cell.appendChild(
                 document.createTextNode(`${ext.name} v${ext.version}`)
             )
         }
-        row.cells[1].appendChild(document.createElement('br'))
-        row.cells[1].appendChild(document.createTextNode(ext.id))
+        cell.appendChild(document.createElement('br'))
+        cell.appendChild(document.createTextNode(ext.id))
         if (ext.uuid !== ext.id) {
-            row.cells[1].appendChild(document.createElement('br'))
-            row.cells[1].appendChild(document.createTextNode(ext.uuid))
+            cell.appendChild(document.createElement('br'))
+            cell.appendChild(document.createTextNode(ext.uuid))
         }
 
-        // TODO: CELL 2
+        // Buttons
+        cell = row.cells[2]
+        if (ext.enabled) {
+            const btn = getButton('Manifest', ext.manifest, 'secondary')
+            cell.style.maxWidth = '84px'
+            cell.classList.add('m-2')
+            cell.appendChild(btn)
+            if (ext.optionsUrl) {
+                const btn = getButton('Options', ext.optionsUrl, 'info')
+                cell.appendChild(btn)
+            }
+        }
+
+        // Host Permissions
+        cell = row.cells[3]
         for (const perm of ext.hostPermissions) {
-            row.cells[2].appendChild(document.createTextNode(perm))
-            row.cells[2].appendChild(document.createElement('br'))
+            cell.appendChild(document.createTextNode(perm))
+            cell.appendChild(document.createElement('br'))
         }
 
-        // TODO: CELL 3
-        row.cells[3].textContent = ext.permissions?.join(', ') || 'None'
+        // Permissions
+        cell = row.cells[4]
+        cell.textContent = ext.permissions?.join(', ') || 'None'
 
-        // TODO: CELL 4
-        if (ext.icon) {
-            const icon = document.createElement('img')
-            icon.src = ext.icon
-            icon.width = 32
-            icon.height = 32
-            row.cells[4].appendChild(icon)
-        }
-
-        // TODO: END
         tbody.appendChild(row)
     }
 }
@@ -102,10 +107,10 @@ function getButton(text, href, style = 'primary') {
     link.addEventListener('click', openLink)
     link.classList.add(
         'btn',
-        `btn-${style}`,
         'btn-sm',
-        'w-100',
+        `btn-${style}`,
         'd-block',
+        'w-100',
         'mb-1'
     )
     link.textContent = text
@@ -172,11 +177,13 @@ async function getExtensions() {
 
         const hostPermissions = []
         let uuid
-        for (const hostPerm of ext.hostPermissions) {
-            if (hostPerm.startsWith('moz-extension://')) {
-                uuid = hostPerm.split('/')[2]
-            } else {
-                hostPermissions.push(hostPerm)
+        if (ext.hostPermissions) {
+            for (const hostPerm of ext.hostPermissions) {
+                if (hostPerm.startsWith('moz-extension://')) {
+                    uuid = hostPerm.split('/')[2]
+                } else {
+                    hostPermissions.push(hostPerm)
+                }
             }
         }
         uuid = uuid || ext.id
