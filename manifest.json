@@ -1,0 +1,52 @@
+{
+  "name": "Extension Manager",
+  "description": "Simple Web Extension Example.",
+  "homepage_url": "https://github.com/smashedr/extension-manager",
+  "author": "Shane",
+  "version": "0.0.1",
+  "manifest_version": 3,
+  "permissions": ["contextMenus", "management", "storage"],
+  "background": { "type": "module" },
+  "options_ui": {
+    "page": "html/options.html",
+    "open_in_tab": true
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+Shift+A"
+      },
+      "description": "Show Main Popup Action"
+    },
+    "openHome": {
+      "suggested_key": {
+        "default": "Alt+Shift+X"
+      },
+      "description": "Open Home Page"
+    },
+    "showPanel": {
+      "suggested_key": {
+        "default": "Alt+Shift+W"
+      },
+      "description": "Show Extension Panel"
+    }
+  },
+  "action": {
+    "default_popup": "html/popup.html",
+    "default_title": "Extension Manager",
+    "default_icon": {
+      "16": "images/logo16.png",
+      "32": "images/logo32.png",
+      "48": "images/logo48.png",
+      "96": "images/logo96.png",
+      "128": "images/logo128.png"
+    }
+  },
+  "icons": {
+    "16": "images/logo16.png",
+    "32": "images/logo32.png",
+    "48": "images/logo48.png",
+    "96": "images/logo96.png",
+    "128": "images/logo128.png"
+  }
+}
