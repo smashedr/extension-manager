@@ -1,6 +1,6 @@
 // JS for home.html
 
-// import { checkPerms } from './export.js'
+import { showToast } from './export.js'
 
 document.addEventListener('DOMContentLoaded', domContentLoaded)
 
@@ -18,6 +18,10 @@ async function domContentLoaded() {
     // const extensions = await chrome.management.getAll()
     const extensions = await getExtensions()
     await updateExtensions(extensions)
+
+    if (chrome.runtime.lastError) {
+        showToast(chrome.runtime.lastError.message, 'warning')
+    }
 }
 
 /**
@@ -76,13 +80,16 @@ async function updateExtensions(extensions) {
 
         // Buttons
         cell = row.cells[2]
+        cell.style.maxWidth = '84px'
         if (ext.enabled) {
-            const btn = getButton('Manifest', ext.manifest, 'secondary')
-            cell.style.maxWidth = '84px'
-            cell.classList.add('m-2')
+            const btn = getButton('Manifest', ext.manifest, 'outline-secondary')
             cell.appendChild(btn)
             if (ext.optionsUrl) {
-                const btn = getButton('Options', ext.optionsUrl, 'info')
+                const btn = getButton(
+                    'Options',
+                    ext.optionsUrl,
+                    'outline-primary'
+                )
                 cell.appendChild(btn)
             }
         }
@@ -102,21 +109,13 @@ async function updateExtensions(extensions) {
     }
 }
 
-function getButton(text, href, style = 'primary') {
-    const link = document.createElement('a')
+function getButton(text, href, style) {
+    // const link = document.createElement('a')
+    const link = document.querySelector('.d-none a').cloneNode(true)
     link.addEventListener('click', openLink)
-    link.classList.add(
-        'btn',
-        'btn-sm',
-        `btn-${style}`,
-        'd-block',
-        'w-100',
-        'mb-1'
-    )
+    link.classList.add(`btn-${style}`)
     link.textContent = text
     link.title = href
-    link.target = '_blank'
-    link.rel = 'noopener'
     link.dataset.href = href
     return link
 }
@@ -126,35 +125,6 @@ async function openLink(event) {
     event.preventDefault()
     const url = event.target.dataset.href
     await chrome.tabs.create({ active: true, url })
-}
-
-function browserSpec(key) {
-    let data
-    if (chrome.runtime.getBrowserInfo) {
-        // console.info('Firefox')
-        data = {
-            protocol: 'moz-extension',
-        }
-    } else {
-        // console.info('Chrome')
-        data = {
-            protocol: 'chrome-extension',
-        }
-    }
-    return data[key]
-}
-
-function getIconUrl(icons, size = 32) {
-    console.debug('getIconUrl:', size, icons)
-    if (!icons?.length) {
-        return null
-    }
-    for (const icon of icons) {
-        if (icon.size === size) {
-            return icon.url
-        }
-    }
-    return icons[0].url
 }
 
 /**
@@ -199,4 +169,33 @@ async function getExtensions() {
         results.push(ext)
     }
     return results
+}
+
+function browserSpec(key) {
+    let data
+    if (chrome.runtime.getBrowserInfo) {
+        // console.info('Firefox')
+        data = {
+            protocol: 'moz-extension',
+        }
+    } else {
+        // console.info('Chrome')
+        data = {
+            protocol: 'chrome-extension',
+        }
+    }
+    return data[key]
+}
+
+function getIconUrl(icons, size = 32) {
+    console.debug('getIconUrl:', size, icons)
+    if (!icons?.length) {
+        return null
+    }
+    for (const icon of icons) {
+        if (icon.size === size) {
+            return icon.url
+        }
+    }
+    return icons[0].url
 }

@@ -1,6 +1,6 @@
 // JS for options.html
 
-import { saveOptions, updateOptions } from './export.js'
+import { saveOptions, showToast, updateOptions } from './export.js'
 
 chrome.storage.onChanged.addListener(onChanged)
 
@@ -34,6 +34,10 @@ async function initOptions() {
     const { options } = await chrome.storage.sync.get(['options'])
     console.debug('options:', options)
     updateOptions(options)
+
+    if (chrome.runtime.lastError) {
+        showToast(chrome.runtime.lastError.message, 'warning')
+    }
 }
 
 /**
