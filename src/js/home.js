@@ -59,18 +59,25 @@ async function updateExtensions(extensions) {
         cell.appendChild(fa)
         if (ext.homepageUrl) {
             const link = document.createElement('a')
-            link.textContent = `${ext.name} v${ext.version}`
-            link.classList.add('link-body-emphasis')
+            link.textContent = ext.name
+            console.debug('ext.name:', ext.name)
+            // link.classList.add('link-body-emphasis')
             link.target = '_blank'
             link.rel = 'noopener'
             link.href = ext.homepageUrl
             link.title = ext.homepageUrl
             cell.appendChild(link)
         } else {
-            cell.appendChild(
-                document.createTextNode(`${ext.name} v${ext.version}`)
-            )
+            const span = document.createElement('span')
+            span.textContent = ext.name
+            span.classList.add('text-primary-emphasis')
+            cell.appendChild(span)
         }
+        cell.appendChild(document.createTextNode(' '))
+        const span = document.createElement('span')
+        span.classList.add('text-primary')
+        span.textContent = `v${ext.version}`
+        cell.appendChild(span)
         cell.appendChild(document.createElement('br'))
         cell.appendChild(document.createTextNode(ext.id))
         if (ext.uuid !== ext.id) {
