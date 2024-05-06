@@ -8,6 +8,11 @@ chrome.contextMenus.onClicked.addListener(onClicked)
 chrome.commands.onCommand.addListener(onCommand)
 chrome.storage.onChanged.addListener(onChanged)
 
+chrome.management.onInstalled.addListener(extInstalled)
+chrome.management.onUninstalled.addListener(extUninstalled)
+chrome.management.onEnabled.addListener(extEnabled)
+chrome.management.onDisabled.addListener(extDisabled)
+
 /**
  * On Startup Callback
  * @function onStartup
@@ -171,4 +176,40 @@ async function setDefaultOptions(defaultOptions) {
         console.log('changed:', options)
     }
     return options
+}
+
+/**
+ * Extension Installed Callback
+ * @function extInstalled
+ * @param {ExtensionInfo} info
+ */
+async function extInstalled(info) {
+    console.log('extInstalled:', info)
+}
+
+/**
+ * Extension Installed Callback
+ * @function extUninstalled
+ * @param {ExtensionInfo} info
+ */
+async function extUninstalled(info) {
+    console.log('extUninstalled:', info)
+}
+
+/**
+ * Extension Enabled Callback
+ * @function extEnabled
+ * @param {ExtensionInfo} info
+ */
+async function extEnabled(info) {
+    console.log('extEnabled:', info)
+}
+
+/**
+ * Extension Disabled Callback
+ * @function extDisabled
+ * @param {ExtensionInfo} info
+ */
+async function extDisabled(info) {
+    console.log('extDisabled:', info)
 }

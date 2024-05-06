@@ -2,6 +2,11 @@
 
 import { showToast } from './export.js'
 
+chrome.management.onInstalled.addListener(updateExtensions)
+chrome.management.onUninstalled.addListener(updateExtensions)
+chrome.management.onEnabled.addListener(updateExtensions)
+chrome.management.onDisabled.addListener(updateExtensions)
+
 document.addEventListener('DOMContentLoaded', domContentLoaded)
 
 const extensionsTable = document.getElementById('extensions-table')
@@ -16,8 +21,7 @@ async function domContentLoaded() {
     const { options } = await chrome.storage.sync.get(['options'])
     console.debug('options:', options)
     // const extensions = await chrome.management.getAll()
-    const extensions = await getExtensions()
-    await updateExtensions(extensions)
+    await updateExtensions()
 
     if (chrome.runtime.lastError) {
         showToast(chrome.runtime.lastError.message, 'warning')
@@ -25,11 +29,11 @@ async function domContentLoaded() {
 }
 
 /**
- * Update History Table
- * @function updateHistory
- * @param {Array} extensions
+ * Update Extensions Table
+ * @function updateExtensions
  */
-async function updateExtensions(extensions) {
+async function updateExtensions() {
+    const extensions = await getExtensions()
     console.debug('updateExtensions:', extensions)
     const tbody = extensionsTable.querySelector('tbody')
     tbody.innerHTML = ''
@@ -56,6 +60,9 @@ async function updateExtensions(extensions) {
         } else {
             fa.classList.add('text-danger')
         }
+        fa.addEventListener('click', toggleExtension)
+        fa.setAttribute('role', 'button')
+        fa.dataset.id = ext.id
         cell.appendChild(fa)
         if (ext.homepageUrl) {
             const link = document.createElement('a')
@@ -79,7 +86,12 @@ async function updateExtensions(extensions) {
         span.textContent = `v${ext.version}`
         cell.appendChild(span)
         cell.appendChild(document.createElement('br'))
-        cell.appendChild(document.createTextNode(ext.id))
+        const span2 = document.createElement('span')
+        span2.classList.add('clip')
+        span2.setAttribute('role', 'button')
+        span2.dataset.clipboardText = ext.id
+        span2.textContent = ext.id
+        cell.appendChild(span2)
         if (ext.uuid !== ext.id) {
             cell.appendChild(document.createElement('br'))
             cell.appendChild(document.createTextNode(ext.uuid))
@@ -134,6 +146,18 @@ async function openLink(event) {
     await chrome.tabs.create({ active: true, url })
 }
 
+async function toggleExtension(event) {
+    console.debug('toggleExtension:', event)
+    event.preventDefault()
+    try {
+        const id = event.target.dataset.id
+        let info = await chrome.management.get(id)
+        await chrome.management.setEnabled(id, !info.enabled)
+    } catch (e) {
+        showToast(e.toString(), 'danger')
+    }
+}
+
 /**
  * Update History Table
  * @function getExtensions
@@ -146,7 +170,7 @@ async function getExtensions() {
     for (const ext of extensions) {
         if (
             ext.type !== 'extension' ||
-            ext.permissions?.includes('internal:svgContextPropertiesAllowed')
+            ext.id.endsWith('@search.mozilla.org')
         ) {
             // console.debug('skipping non-extension:', ext)
             continue
