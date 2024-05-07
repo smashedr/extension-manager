@@ -1,6 +1,6 @@
 // JS Background Service Worker
 
-// import { injectFunction } from './export.js'
+import { activateOrOpen } from './export.js'
 
 chrome.runtime.onStartup.addListener(onStartup)
 chrome.runtime.onInstalled.addListener(onInstalled)
@@ -73,7 +73,10 @@ async function onClicked(ctx, tab) {
         chrome.runtime.openOptionsPage()
     } else if (ctx.menuItemId === 'openHome') {
         const url = chrome.runtime.getURL('/html/home.html')
-        await chrome.tabs.create({ active: true, url })
+        activateOrOpen(url)
+    } else if (ctx.menuItemId === 'openHistory') {
+        const url = chrome.runtime.getURL('/html/history.html')
+        activateOrOpen(url)
     } else if (ctx.menuItemId === 'showPanel') {
         await chrome.windows.create({
             type: 'panel',
@@ -95,7 +98,7 @@ async function onCommand(command) {
     console.debug(`onCommand: ${command}`)
     if (command === 'openHome') {
         const url = chrome.runtime.getURL('/html/home.html')
-        await chrome.tabs.create({ active: true, url })
+        activateOrOpen(url)
     } else if (command === 'showPanel') {
         await chrome.windows.create({
             type: 'panel',
@@ -138,6 +141,7 @@ function createContextMenus() {
     chrome.contextMenus.removeAll()
     const contexts = [
         [['all'], 'openHome', 'normal', 'Extension Manager'],
+        [['all'], 'openHistory', 'normal', 'Extension History'],
         [['all'], 'openOptions', 'normal', 'Open Options'],
         [['all'], 's-1', 'separator', ''],
         [['all'], 'showPanel', 'normal', 'Show Panel'],
@@ -160,6 +164,12 @@ function createContextMenus() {
  */
 async function setDefaultOptions(defaultOptions) {
     console.log('setDefaultOptions', defaultOptions)
+    let { history } = await chrome.storage.local.get(['history'])
+    if (!history) {
+        history = []
+        await chrome.storage.local.set({ history })
+        console.log('initialize empty history')
+    }
     let { options } = await chrome.storage.sync.get(['options'])
     options = options || {}
     let changed = false
@@ -184,7 +194,8 @@ async function setDefaultOptions(defaultOptions) {
  * @param {ExtensionInfo} info
  */
 async function extInstalled(info) {
-    console.log('extInstalled:', info)
+    console.debug('extInstalled:', info)
+    await addHistory('install', info)
 }
 
 /**
@@ -193,7 +204,8 @@ async function extInstalled(info) {
  * @param {ExtensionInfo} info
  */
 async function extUninstalled(info) {
-    console.log('extUninstalled:', info)
+    console.debug('extUninstalled:', info)
+    await addHistory('uninstall', info)
 }
 
 /**
@@ -202,7 +214,8 @@ async function extUninstalled(info) {
  * @param {ExtensionInfo} info
  */
 async function extEnabled(info) {
-    console.log('extEnabled:', info)
+    console.debug('extEnabled:', info)
+    await addHistory('enable', info)
 }
 
 /**
@@ -211,5 +224,26 @@ async function extEnabled(info) {
  * @param {ExtensionInfo} info
  */
 async function extDisabled(info) {
-    console.log('extDisabled:', info)
+    console.debug('extDisabled:', info)
+    await addHistory('disable', info)
+}
+
+/**
+ * Extension Disabled Callback
+ * @function extDisabled
+ * @param {String} action
+ * @param {ExtensionInfo} info
+ */
+async function addHistory(action, info) {
+    if (['extension-manager@cssnr.com'].includes(info.id)) {
+        return console.debug('skipping self')
+    }
+    console.log('addHistory:', action, info)
+    let { history } = await chrome.storage.local.get(['history'])
+    info.action = action
+    info.date = Date.now()
+    // console.log('info:', info)
+    history.push(info)
+    console.debug('history:', history)
+    await chrome.storage.local.set({ history })
 }

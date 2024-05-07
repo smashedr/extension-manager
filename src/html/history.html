@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Extension Manager Home</title>
+    <title>Extension Manager Details</title>
     <link rel="icon" href="../images/logo16.png" sizes="any">
     <link rel="stylesheet" type="text/css" href="../dist/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="../dist/fontawesome/css/all.min.css">
@@ -14,24 +14,22 @@
 <div class="container-fluid p-3">
     <div class="row">
         <div class="col-12">
-            <h1>Extension Manager Home</h1>
-            <p>Installed Extensions Details</p>
-            <table id="extensions-table" class="table table-hover table-sm">
-                <caption class="visually-hidden">Extensions</caption>
+            <h1>Extension Manager History</h1>
+            <p>Extensions History Details</p>
+            <table id="history-table" class="table table-hover table-sm">
+                <caption class="visually-hidden">History</caption>
                 <thead>
                 <tr>
-                    <th scope="col">Icon</th>
-                    <th scope="col">Name / ID</th>
-                    <th scope="col">Buttons</th>
-                    <th scope="col">Host</th>
-                    <th scope="col">Permissions</th>
+                    <th scope="col">Action</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Date</th>
                 </tr>
                 </thead>
                 <tbody>
                 </tbody>
                 <tfoot class="d-none">
                 <tr>
-                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -52,6 +50,10 @@
 </div> <!-- toast -->
 
 <div class="d-none">
+    <a type="button" role="button" class="btn d-block m-1 w-100" target="_blank" rel="noopener"
+       style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
+        Custom button</a>
+    <i class="fa-solid fa-circle me-1"></i>
     <div class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
         <div class="toast-body"></div>
     </div>
@@ -64,7 +66,7 @@
 <script type="text/javascript" src="../dist/bootstrap/bootstrap.bundle.min.js"></script>
 <script type="text/javascript" src="../dist/clipboard/clipboard.min.js"></script>
 <script type="module" src="../js/main.js"></script>
-<script type="module" src="../js/home.js"></script>
+<script type="module" src="../js/history.js"></script>
 
 </body>
 </html>

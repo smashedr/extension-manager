@@ -67,7 +67,7 @@ async function updateExtensions() {
         if (ext.homepageUrl) {
             const link = document.createElement('a')
             link.textContent = ext.name
-            console.debug('ext.name:', ext.name)
+            // console.debug('ext.name:', ext.name)
             // link.classList.add('link-body-emphasis')
             link.target = '_blank'
             link.rel = 'noopener'
@@ -205,12 +205,12 @@ async function getExtensions() {
 function browserSpec(key) {
     let data
     if (chrome.runtime.getBrowserInfo) {
-        // console.info('Firefox')
+        // console.debug('Firefox')
         data = {
             protocol: 'moz-extension',
         }
     } else {
-        // console.info('Chrome')
+        // console.debug('Chrome')
         data = {
             protocol: 'chrome-extension',
         }
@@ -219,7 +219,7 @@ function browserSpec(key) {
 }
 
 function getIconUrl(icons, size = 32) {
-    console.debug('getIconUrl:', size, icons)
+    // console.debug('getIconUrl:', size, icons)
     if (!icons?.length) {
         return null
     }
