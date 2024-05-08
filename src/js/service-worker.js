@@ -1,6 +1,6 @@
 // JS Background Service Worker
 
-import { activateOrOpen } from './export.js'
+import { activateOrOpen, getExtensions } from './export.js'
 
 chrome.runtime.onStartup.addListener(onStartup)
 chrome.runtime.onInstalled.addListener(onInstalled)
@@ -190,18 +190,11 @@ async function setDefaultOptions(defaultOptions) {
 }
 
 async function setExtensions() {
-    console.debug('setExtensions')
-    const extensions = await chrome.management.getAll()
-    console.debug('getExtensions:', extensions)
+    const extensions = await getExtensions()
+    console.debug('setExtensions:', extensions)
     // let { installed } = await chrome.storage.local.get(['installed'])
     const installed = {}
     for (const info of extensions) {
-        if (
-            info.type !== 'extension' ||
-            info.id.endsWith('@search.mozilla.org')
-        ) {
-            continue
-        }
         installed[info.id] = true
     }
     await chrome.storage.local.set({ installed })
@@ -215,10 +208,13 @@ async function setExtensions() {
 async function extInstalled(info) {
     console.debug('extInstalled:', info)
     let { installed } = await chrome.storage.local.get(['installed'])
+    console.debug('installed:', installed)
     if (info.id in installed) {
         await addHistory('update', info)
     } else {
         await addHistory('install', info)
+        installed[info.id] = true
+        await chrome.storage.local.set({ installed })
     }
 }
 
@@ -229,6 +225,12 @@ async function extInstalled(info) {
  */
 async function extUninstalled(info) {
     console.debug('extUninstalled:', info)
+    let { installed } = await chrome.storage.local.get(['installed'])
+    if (info.id in installed) {
+        if (delete installed[info.id]) {
+            await chrome.storage.local.set({ installed })
+        }
+    }
     await addHistory('uninstall', info)
 }
 

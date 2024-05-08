@@ -123,3 +123,75 @@ export function showToast(message, type = 'success') {
     element.addEventListener('mousemove', () => toast.hide())
     toast.show()
 }
+
+/**
+ * Update History Table
+ * @function getExtensions
+ * @return  {Array}
+ */
+export async function getExtensions() {
+    const extensions = await chrome.management.getAll()
+    console.debug('getExtensions:', extensions)
+    const results = []
+    for (const info of extensions) {
+        if (
+            info.type !== 'extension' ||
+            info.id.endsWith('@search.mozilla.org')
+        ) {
+            continue
+        }
+
+        const hostPermissions = []
+        let uuid
+        if (info.hostPermissions) {
+            for (const hostPerm of info.hostPermissions) {
+                if (hostPerm.startsWith('moz-extension://')) {
+                    uuid = hostPerm.split('/')[2]
+                } else {
+                    hostPermissions.push(hostPerm)
+                }
+            }
+        }
+        uuid = uuid || info.id
+
+        const manifest = `${browserSpec('protocol')}://${uuid}/manifest.json`
+
+        const icon = getIconUrl(info.icons, 32)
+
+        info.hostPermissions = hostPermissions
+        info.icon = icon
+        info.uuid = uuid
+        info.manifest = manifest
+        results.push(info)
+    }
+    return results
+}
+
+function browserSpec(key) {
+    let data
+    if (chrome.runtime.getBrowserInfo) {
+        // console.debug('Firefox')
+        data = {
+            protocol: 'moz-extension',
+        }
+    } else {
+        // console.debug('Chrome')
+        data = {
+            protocol: 'chrome-extension',
+        }
+    }
+    return data[key]
+}
+
+function getIconUrl(icons, size = 32) {
+    // console.debug('getIconUrl:', size, icons)
+    if (!icons?.length) {
+        return null
+    }
+    for (const icon of icons) {
+        if (icon.size === size) {
+            return icon.url
+        }
+    }
+    return icons[0].url
+}
