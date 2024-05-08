@@ -59,6 +59,7 @@ async function onInstalled(details) {
         }
     }
     await chrome.runtime.setUninstallURL(`${githubURL}/issues`)
+    await setExtensions()
 }
 
 /**
@@ -188,6 +189,24 @@ async function setDefaultOptions(defaultOptions) {
     return options
 }
 
+async function setExtensions() {
+    console.debug('setExtensions')
+    const extensions = await chrome.management.getAll()
+    console.debug('getExtensions:', extensions)
+    // let { installed } = await chrome.storage.local.get(['installed'])
+    const installed = {}
+    for (const info of extensions) {
+        if (
+            info.type !== 'extension' ||
+            info.id.endsWith('@search.mozilla.org')
+        ) {
+            continue
+        }
+        installed[info.id] = true
+    }
+    await chrome.storage.local.set({ installed })
+}
+
 /**
  * Extension Installed Callback
  * @function extInstalled
@@ -195,11 +214,16 @@ async function setDefaultOptions(defaultOptions) {
  */
 async function extInstalled(info) {
     console.debug('extInstalled:', info)
-    await addHistory('install', info)
+    let { installed } = await chrome.storage.local.get(['installed'])
+    if (info.id in installed) {
+        await addHistory('update', info)
+    } else {
+        await addHistory('install', info)
+    }
 }
 
 /**
- * Extension Installed Callback
+ * Extension Uninstalled Callback
  * @function extUninstalled
  * @param {ExtensionInfo} info
  */
@@ -237,6 +261,9 @@ async function extDisabled(info) {
 async function addHistory(action, info) {
     if (['extension-manager@cssnr.com'].includes(info.id)) {
         return console.debug('skipping self')
+    }
+    if (info.type !== 'extension' || info.id.endsWith('@search.mozilla.org')) {
+        return console.debug('skipping non-extension', info)
     }
     console.log('addHistory:', action, info)
     let { history } = await chrome.storage.local.get(['history'])

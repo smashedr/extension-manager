@@ -41,16 +41,20 @@ async function updateHistory(history) {
         cell = row.cells[0]
         cell.textContent = info.action
 
-        // Name
+        // Version
         cell = row.cells[1]
+        cell.textContent = info.version
+
+        // Name
+        cell = row.cells[2]
         cell.textContent = info.name
 
         // ID
-        cell = row.cells[2]
+        cell = row.cells[3]
         cell.textContent = info.id
 
         // Name, Version, ID, UUID
-        cell = row.cells[3]
+        cell = row.cells[4]
         const date = new Date(info.date)
         cell.textContent = date.toLocaleString()
 

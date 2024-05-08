@@ -167,19 +167,18 @@ async function getExtensions() {
     const extensions = await chrome.management.getAll()
     console.debug('getExtensions:', extensions)
     const results = []
-    for (const ext of extensions) {
+    for (const info of extensions) {
         if (
-            ext.type !== 'extension' ||
-            ext.id.endsWith('@search.mozilla.org')
+            info.type !== 'extension' ||
+            info.id.endsWith('@search.mozilla.org')
         ) {
-            // console.debug('skipping non-extension:', ext)
             continue
         }
 
         const hostPermissions = []
         let uuid
-        if (ext.hostPermissions) {
-            for (const hostPerm of ext.hostPermissions) {
+        if (info.hostPermissions) {
+            for (const hostPerm of info.hostPermissions) {
                 if (hostPerm.startsWith('moz-extension://')) {
                     uuid = hostPerm.split('/')[2]
                 } else {
@@ -187,17 +186,17 @@ async function getExtensions() {
                 }
             }
         }
-        uuid = uuid || ext.id
+        uuid = uuid || info.id
 
         const manifest = `${browserSpec('protocol')}://${uuid}/manifest.json`
 
-        const icon = getIconUrl(ext.icons, 32)
+        const icon = getIconUrl(info.icons, 32)
 
-        ext.hostPermissions = hostPermissions
-        ext.icon = icon
-        ext.uuid = uuid
-        ext.manifest = manifest
-        results.push(ext)
+        info.hostPermissions = hostPermissions
+        info.icon = icon
+        info.uuid = uuid
+        info.manifest = manifest
+        results.push(info)
     }
     return results
 }
