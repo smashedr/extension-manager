@@ -86,15 +86,9 @@ async function updateExtensions() {
         span.textContent = `v${info.version}`
         cell.appendChild(span)
         cell.appendChild(document.createElement('br'))
-        const span2 = document.createElement('span')
-        span2.classList.add('clip')
-        span2.setAttribute('role', 'button')
-        span2.dataset.clipboardText = info.id
-        span2.textContent = info.id
-        cell.appendChild(span2)
+        appendClipSpan(cell, info.id, true)
         if (info.uuid !== info.id) {
-            cell.appendChild(document.createElement('br'))
-            cell.appendChild(document.createTextNode(info.uuid))
+            appendClipSpan(cell, info.uuid, true)
         }
 
         // Buttons
@@ -118,15 +112,13 @@ async function updateExtensions() {
         }
 
         // Host Permissions
-        cell = row.cells[3]
         for (const perm of info.hostPermissions) {
-            cell.appendChild(document.createTextNode(perm))
-            cell.appendChild(document.createElement('br'))
+            appendClipSpan(row.cells[3], perm, true, ['text-nowrap'])
         }
 
         // Permissions
-        cell = row.cells[4]
-        cell.textContent = info.permissions?.join(', ') || 'None'
+        const perm = info.permissions?.join(', ') || ''
+        appendClipSpan(row.cells[4], perm)
 
         tbody.appendChild(row)
     }

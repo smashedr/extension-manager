@@ -196,11 +196,18 @@ function getIconUrl(icons, size = 32) {
     return icons[0].url
 }
 
-export function appendClipSpan(parent, text) {
+export function appendClipSpan(parent, text, br = false, classes = []) {
+    if (!text) {
+        return
+    }
     const span = document.createElement('span')
     span.textContent = text
     span.classList.add('clip')
+    span.classList.add(...classes)
     span.setAttribute('role', 'button')
     span.dataset.clipboardText = text
     parent.appendChild(span)
+    if (br) {
+        parent.appendChild(document.createElement('br'))
+    }
 }
