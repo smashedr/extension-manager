@@ -64,6 +64,7 @@ async function updateExtensions() {
         fa.setAttribute('role', 'button')
         fa.dataset.id = info.id
         cell.appendChild(fa)
+
         if (info.homepageUrl) {
             const link = document.createElement('a')
             link.textContent = info.name
@@ -81,14 +82,15 @@ async function updateExtensions() {
             cell.appendChild(span)
         }
         cell.appendChild(document.createTextNode(' '))
+
         const span = document.createElement('span')
         span.classList.add('text-primary')
         span.textContent = `v${info.version}`
         cell.appendChild(span)
         cell.appendChild(document.createElement('br'))
-        appendClipSpan(cell, info.id, true)
+        appendClipSpan(cell, info.id, true, true, ['text-nowrap'])
         if (info.uuid !== info.id) {
-            appendClipSpan(cell, info.uuid, true)
+            appendClipSpan(cell, info.uuid, true, true, ['text-nowrap'])
         }
 
         // Buttons
@@ -113,7 +115,7 @@ async function updateExtensions() {
 
         // Host Permissions
         for (const perm of info.hostPermissions) {
-            appendClipSpan(row.cells[3], perm, true, ['text-nowrap'])
+            appendClipSpan(row.cells[3], perm, true, false, ['text-nowrap'])
         }
 
         // Permissions

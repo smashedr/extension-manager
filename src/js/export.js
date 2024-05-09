@@ -196,7 +196,13 @@ function getIconUrl(icons, size = 32) {
     return icons[0].url
 }
 
-export function appendClipSpan(parent, text, br = false, classes = []) {
+export function appendClipSpan(
+    parent,
+    text,
+    clip = true,
+    br = false,
+    classes = []
+) {
     if (!text) {
         return
     }
