@@ -1,6 +1,11 @@
 // JS for home.html
 
-import { appendClipSpan, getExtensions, showToast } from './export.js'
+import {
+    appendClipSpan,
+    getExtensions,
+    linkClick,
+    showToast,
+} from './export.js'
 
 chrome.management.onInstalled.addListener(updateExtensions)
 chrome.management.onUninstalled.addListener(updateExtensions)
@@ -8,6 +13,10 @@ chrome.management.onEnabled.addListener(updateExtensions)
 chrome.management.onDisabled.addListener(updateExtensions)
 
 document.addEventListener('DOMContentLoaded', domContentLoaded)
+
+document
+    .querySelectorAll('a[href]')
+    .forEach((el) => el.addEventListener('click', linkClick))
 
 const extensionsTable = document.getElementById('extensions-table')
 const faCircle = document.querySelector('.d-none .fa-circle')

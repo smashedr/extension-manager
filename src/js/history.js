@@ -1,10 +1,14 @@
 // JS for home.html
 
-import { appendClipSpan, showToast } from './export.js'
+import { appendClipSpan, linkClick, showToast } from './export.js'
 
 chrome.storage.onChanged.addListener(onChanged)
 
 document.addEventListener('DOMContentLoaded', domContentLoaded)
+
+document
+    .querySelectorAll('a[href]')
+    .forEach((el) => el.addEventListener('click', linkClick))
 
 const historyTable = document.getElementById('history-table')
 

@@ -2,15 +2,19 @@
 
 import {
     activateOrOpen,
+    linkClick,
     saveOptions,
     showToast,
     updateOptions,
 } from './export.js'
 
 document.addEventListener('DOMContentLoaded', initPopup)
+
 document
     .querySelectorAll('a[href]')
-    .forEach((el) => el.addEventListener('click', popupLinks))
+    .forEach((el) =>
+        el.addEventListener('click', (event) => linkClick(event, true))
+    )
 document
     .querySelectorAll('#options-form input')
     .forEach((el) => el.addEventListener('change', saveOptions))

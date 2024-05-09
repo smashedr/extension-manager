@@ -19,6 +19,7 @@ chrome.management.onDisabled.addListener(extDisabled)
  */
 async function onStartup() {
     console.log('onStartup')
+    await setExtensions()
     if (typeof browser !== 'undefined') {
         console.log('Firefox CTX Menu Workaround')
         const { options } = await chrome.storage.sync.get(['options'])

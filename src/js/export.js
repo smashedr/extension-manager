@@ -80,6 +80,44 @@ function hideShowElement(selector, show, speed = 'fast') {
 }
 
 /**
+ * Link Click Callback
+ * Firefox requires a call to window.close()
+ * @function linkClick
+ * @param {Event} event
+ * @param {Boolean} close
+ */
+export async function linkClick(event, close = false) {
+    console.debug('linkClick:', event)
+    console.debug('close:', close)
+    event.preventDefault()
+    const anchor = event.target.closest('a')
+    const href = anchor.getAttribute('href').replace(/^\.+/g, '')
+    console.debug('href:', href)
+    let url
+    if (href.endsWith('html/options.html')) {
+        chrome.runtime.openOptionsPage()
+        if (close) window.close()
+        return
+    } else if (href.endsWith('html/panel.html')) {
+        await chrome.windows.create({
+            type: 'panel',
+            url: '/html/panel.html',
+            width: 720,
+            height: 480,
+        })
+        if (close) window.close()
+        return
+    } else if (href.startsWith('http')) {
+        url = href
+    } else {
+        url = chrome.runtime.getURL(href)
+    }
+    console.debug('url:', url)
+    await activateOrOpen(url)
+    if (close) window.close()
+}
+
+/**
  * Activate or Open Tab from URL
  * @function activateOrOpen
  * @param {String} url
