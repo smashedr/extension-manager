@@ -1,6 +1,6 @@
 // JS for home.html
 
-import { showToast } from './export.js'
+import { appendClipSpan, showToast } from './export.js'
 
 chrome.storage.onChanged.addListener(onChanged)
 
@@ -39,24 +39,31 @@ async function updateHistory(history) {
 
         // Name, Version, ID, UUID
         cell = row.cells[0]
+        cell.classList.add('text-capitalize')
         cell.textContent = info.action
+        console.log(info.action)
+        if (info.action === 'install') {
+            cell.classList.add('text-success')
+        } else if (info.action === 'uninstall') {
+            cell.classList.add('text-danger')
+        } else if (info.action === 'enable') {
+            cell.classList.add('text-success-emphasis')
+        } else if (info.action === 'disable') {
+            cell.classList.add('text-warning-emphasis')
+        }
 
         // Version
-        cell = row.cells[1]
-        cell.textContent = info.version
+        appendClipSpan(row.cells[1], info.version)
 
         // Name
-        cell = row.cells[2]
-        cell.textContent = info.name
+        appendClipSpan(row.cells[2], info.name)
 
         // ID
-        cell = row.cells[3]
-        cell.textContent = info.id
+        appendClipSpan(row.cells[3], info.id)
 
         // Name, Version, ID, UUID
-        cell = row.cells[4]
         const date = new Date(info.date)
-        cell.textContent = date.toLocaleString()
+        appendClipSpan(row.cells[4], date.toLocaleString())
 
         tbody.appendChild(row)
     }

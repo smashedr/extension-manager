@@ -195,3 +195,12 @@ function getIconUrl(icons, size = 32) {
     }
     return icons[0].url
 }
+
+export function appendClipSpan(parent, text) {
+    const span = document.createElement('span')
+    span.textContent = text
+    span.classList.add('clip')
+    span.setAttribute('role', 'button')
+    span.dataset.clipboardText = text
+    parent.appendChild(span)
+}

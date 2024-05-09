@@ -1,6 +1,6 @@
 // JS for home.html
 
-import { getExtensions, showToast } from './export.js'
+import { appendClipSpan, getExtensions, showToast } from './export.js'
 
 chrome.management.onInstalled.addListener(updateExtensions)
 chrome.management.onUninstalled.addListener(updateExtensions)
@@ -38,15 +38,15 @@ async function updateExtensions() {
     const tbody = extensionsTable.querySelector('tbody')
     tbody.innerHTML = ''
     const tr = extensionsTable.querySelector('tfoot tr')
-    for (const ext of extensions) {
+    for (const info of extensions) {
         const row = tr.cloneNode(true)
         let cell
 
         // Icon
         cell = row.cells[0]
-        if (ext.icon) {
+        if (info.icon) {
             const icon = document.createElement('img')
-            icon.src = ext.icon
+            icon.src = info.icon
             icon.width = 32
             icon.height = 32
             cell.appendChild(icon)
@@ -55,58 +55,62 @@ async function updateExtensions() {
         // Name, Version, ID, UUID
         cell = row.cells[1]
         const fa = faCircle.cloneNode(true)
-        if (ext.enabled) {
+        if (info.enabled) {
             fa.classList.add('text-success')
         } else {
             fa.classList.add('text-danger')
         }
         fa.addEventListener('click', toggleExtension)
         fa.setAttribute('role', 'button')
-        fa.dataset.id = ext.id
+        fa.dataset.id = info.id
         cell.appendChild(fa)
-        if (ext.homepageUrl) {
+        if (info.homepageUrl) {
             const link = document.createElement('a')
-            link.textContent = ext.name
-            // console.debug('ext.name:', ext.name)
+            link.textContent = info.name
+            // console.debug('info.name:', info.name)
             // link.classList.add('link-body-emphasis')
             link.target = '_blank'
             link.rel = 'noopener'
-            link.href = ext.homepageUrl
-            link.title = ext.homepageUrl
+            link.href = info.homepageUrl
+            link.title = info.homepageUrl
             cell.appendChild(link)
         } else {
             const span = document.createElement('span')
-            span.textContent = ext.name
+            span.textContent = info.name
             span.classList.add('text-primary-emphasis')
             cell.appendChild(span)
         }
         cell.appendChild(document.createTextNode(' '))
         const span = document.createElement('span')
         span.classList.add('text-primary')
-        span.textContent = `v${ext.version}`
+        span.textContent = `v${info.version}`
         cell.appendChild(span)
         cell.appendChild(document.createElement('br'))
         const span2 = document.createElement('span')
         span2.classList.add('clip')
         span2.setAttribute('role', 'button')
-        span2.dataset.clipboardText = ext.id
-        span2.textContent = ext.id
+        span2.dataset.clipboardText = info.id
+        span2.textContent = info.id
         cell.appendChild(span2)
-        if (ext.uuid !== ext.id) {
+        if (info.uuid !== info.id) {
             cell.appendChild(document.createElement('br'))
-            cell.appendChild(document.createTextNode(ext.uuid))
+            cell.appendChild(document.createTextNode(info.uuid))
         }
 
         // Buttons
         cell = row.cells[2]
         cell.style.maxWidth = '84px'
-        if (ext.enabled) {
-            const btn = getButton('Manifest', ext.manifest, 'outline-secondary')
+        if (info.enabled) {
+            const btn = getButton(
+                'Manifest',
+                info.manifest,
+                'outline-secondary'
+            )
             cell.appendChild(btn)
-            if (ext.optionsUrl) {
+            if (info.optionsUrl) {
                 const btn = getButton(
                     'Options',
-                    ext.optionsUrl,
+                    info.optionsUrl,
                     'outline-primary'
                 )
                 cell.appendChild(btn)
@@ -115,14 +119,14 @@ async function updateExtensions() {
 
         // Host Permissions
         cell = row.cells[3]
-        for (const perm of ext.hostPermissions) {
+        for (const perm of info.hostPermissions) {
             cell.appendChild(document.createTextNode(perm))
             cell.appendChild(document.createElement('br'))
         }
 
         // Permissions
         cell = row.cells[4]
-        cell.textContent = ext.permissions?.join(', ') || 'None'
+        cell.textContent = info.permissions?.join(', ') || 'None'
 
         tbody.appendChild(row)
     }
