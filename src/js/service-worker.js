@@ -144,9 +144,9 @@ function createContextMenus() {
     const contexts = [
         [['all'], 'openHome', 'normal', 'Extension Manager'],
         [['all'], 'openHistory', 'normal', 'Extension History'],
-        [['all'], 'openOptions', 'normal', 'Open Options'],
-        [['all'], 's-1', 'separator', ''],
         [['all'], 'showPanel', 'normal', 'Show Panel'],
+        [['all'], 's-1', 'separator', ''],
+        [['all'], 'openOptions', 'normal', 'Open Options'],
     ]
     contexts.forEach((context) => {
         chrome.contextMenus.create({
