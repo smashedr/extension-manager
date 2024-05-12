@@ -124,7 +124,7 @@ async function updateExtensions() {
 
         // Host Permissions
         for (const perm of info.hostPermissions) {
-            appendClipSpan(row.cells[3], perm, true, false, ['text-nowrap'])
+            appendClipSpan(row.cells[3], perm, true, true, ['text-nowrap'])
         }
 
         // Permissions
