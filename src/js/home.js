@@ -99,7 +99,10 @@ async function updateExtensions() {
         cell.appendChild(document.createElement('br'))
         appendClipSpan(cell, info.id, true, true, ['text-nowrap'])
         if (info.uuid !== info.id) {
-            appendClipSpan(cell, info.uuid, true, true, ['text-nowrap'])
+            appendClipSpan(cell, info.uuid, true, true, [
+                'text-nowrap',
+                'text-dark-emphasis',
+            ])
         }
 
         // Buttons
@@ -123,8 +126,18 @@ async function updateExtensions() {
         }
 
         // Host Permissions
+        let count = 0
         for (const perm of info.hostPermissions) {
+            console.log(perm)
             appendClipSpan(row.cells[3], perm, true, true, ['text-nowrap'])
+            count += 1
+            if (count === 6 && info.hostPermissions.length > 6) {
+                const span = document.createElement('span')
+                span.textContent = `+${info.hostPermissions.length - 6} More...`
+                span.classList.add('text-danger')
+                row.cells[3].appendChild(span)
+                break
+            }
         }
 
         // Permissions
