@@ -53,6 +53,20 @@ async function updateExtensions() {
 
         // Icon
         cell = row.cells[0]
+        const outer = document.createElement('div')
+        outer.classList.add('form-check', 'form-switch')
+        //   <input class="form-check-input" type="checkbox" role="switch" >
+        const inner = document.createElement('input')
+        inner.classList.add('form-check-input')
+        inner.type = 'checkbox'
+        inner.role = 'switch'
+        inner.dataset.id = info.id
+        inner.addEventListener('click', toggleExtension)
+        if (info.enabled) {
+            inner.checked = true
+        }
+        outer.appendChild(inner)
+        cell.appendChild(outer)
         if (info.icon) {
             const icon = document.createElement('img')
             icon.src = info.icon
