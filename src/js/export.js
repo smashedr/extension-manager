@@ -246,10 +246,12 @@ export function appendClipSpan(
     }
     const span = document.createElement('span')
     span.textContent = text
-    span.classList.add('clip')
     span.classList.add(...classes)
-    span.setAttribute('role', 'button')
-    span.dataset.clipboardText = text
+    if (clip) {
+        span.classList.add('clip')
+        span.dataset.clipboardText = text
+        span.setAttribute('role', 'button')
+    }
     parent.appendChild(span)
     if (br) {
         parent.appendChild(document.createElement('br'))

@@ -140,18 +140,25 @@ async function updateExtensions() {
         }
 
         // Host Permissions
-        let count = 0
-        for (const perm of info.hostPermissions) {
-            console.log(perm)
-            appendClipSpan(row.cells[3], perm, true, true, ['text-nowrap'])
-            count += 1
-            if (count === 6 && info.hostPermissions.length > 6) {
-                const span = document.createElement('span')
-                span.textContent = `+${info.hostPermissions.length - 6} More...`
-                span.classList.add('text-danger')
-                row.cells[3].appendChild(span)
-                break
-            }
+        cell = row.cells[3]
+        const displayCount = 4
+        console.debug('info.hostPermissions:', info.hostPermissions)
+        const hostText = info.hostPermissions.join('\n')
+        console.debug('hostText:', hostText)
+        const hostPermissions = info.hostPermissions.splice(0, displayCount)
+        const div = document.createElement('div')
+        for (const host of hostPermissions) {
+            appendClipSpan(div, host, false, true, ['text-nowrap'])
+        }
+        div.classList.add('clip')
+        div.setAttribute('role', 'button')
+        div.dataset.clipboardText = hostText
+        cell.appendChild(div)
+        if (info.hostPermissions.length) {
+            console.debug('extra hosts count:', info.hostPermissions.length)
+            span.textContent = `+${info.hostPermissions.length - displayCount} More...`
+            span.classList.add('text-danger')
+            cell.appendChild(span)
         }
 
         // Permissions
