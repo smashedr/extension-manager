@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="h-100" >
 <head>
     <meta charset="utf-8">
     <title>Extension Manager Home</title>
@@ -9,9 +9,32 @@
     <link rel="stylesheet" type="text/css" href="../css/main.css">
     <script type="text/javascript" src="../js/theme.js"></script>
 </head>
-<body>
+<body class="d-flex flex-column h-100">
 
-<div class="container-fluid p-3">
+<header>
+    <nav class="navbar navbar-expand-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <img src="/images/logo32.png" width="24" height="24" alt="logo"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+                    <li class="nav-item"><a class="nav-link active" href="../html/home.html">
+                        Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../html/history.html">
+                        History</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main class="flex-grow-1 p-3">
+<div class="container-fluid">
     <div class="row">
         <div class="col-12">
             <h1>Extension Manager Home</h1>
@@ -42,6 +65,25 @@
         </div>
     </div>
 </div> <!-- container -->
+</main> <!-- main -->
+
+<footer class="footer mt-auto p-2 flex-shrink-0">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 col-sm-4">
+                <p><a class="link-body-emphasis text-decoration-none" href="https://github.com/smashedr/extension-manager" target="_blank" rel="noopener">
+                    Extension Manager <i class="fa-solid fa-arrow-up-right-from-square"></i></a></p>
+            </div>
+            <div class="col-12 col-sm-8 text-sm-end">
+                <ul class="list-inline">
+                    <li class="list-inline-item"><a class="link-body-emphasis text-decoration-none fw-bold" href="../html/home.html">Home</a></li>
+                    <li class="list-inline-item">|</li>
+                    <li class="list-inline-item"><a class="link-body-emphasis text-decoration-none" href="../html/history.html">History</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer> <!-- footer -->
 
 <button type="button" class="btn btn-outline-primary" id="back-to-top">
     <i class="fa-regular fa-square-caret-up"></i>

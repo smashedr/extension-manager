@@ -14,9 +14,9 @@ chrome.management.onDisabled.addListener(updateExtensions)
 
 document.addEventListener('DOMContentLoaded', domContentLoaded)
 
-document
-    .querySelectorAll('a[href]')
-    .forEach((el) => el.addEventListener('click', linkClick))
+// document
+//     .querySelectorAll('a[href]')
+//     .forEach((el) => el.addEventListener('click', linkClick))
 
 const extensionsTable = document.getElementById('extensions-table')
 const faCircle = document.querySelector('.d-none .fa-circle')

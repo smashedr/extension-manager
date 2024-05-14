@@ -6,9 +6,9 @@ chrome.storage.onChanged.addListener(onChanged)
 
 document.addEventListener('DOMContentLoaded', domContentLoaded)
 
-document
-    .querySelectorAll('a[href]')
-    .forEach((el) => el.addEventListener('click', linkClick))
+// document
+//     .querySelectorAll('a[href]')
+//     .forEach((el) => el.addEventListener('click', linkClick))
 
 const historyTable = document.getElementById('history-table')
 
