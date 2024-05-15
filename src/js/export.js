@@ -178,7 +178,6 @@ export async function getExtensions() {
         ) {
             continue
         }
-
         const hostPermissions = []
         let uuid
         if (info.hostPermissions) {
@@ -191,17 +190,13 @@ export async function getExtensions() {
             }
         }
         uuid = uuid || info.id
-
-        const manifest = `${browserSpec('protocol')}://${uuid}/manifest.json`
-
-        const icon = getIconUrl(info.icons, 32)
-
         info.hostPermissions = hostPermissions
-        info.icon = icon
+        info.icon = getIconUrl(info.icons, 32)
         info.uuid = uuid
-        info.manifest = manifest
+        info.manifest = `${browserSpec('protocol')}://${uuid}/manifest.json`
         results.push(info)
     }
+    results.sort((a, b) => a.name.localeCompare(b.name))
     return results
 }
 
