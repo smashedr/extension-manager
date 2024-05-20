@@ -8,8 +8,8 @@ svg {
 
 #back-to-top {
     position: fixed;
-    bottom: 64px;
-    right: 20px;
+    bottom: 116px;
+    right: 28px;
     display: none;
     z-index: 3;
 }

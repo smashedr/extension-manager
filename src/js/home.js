@@ -14,7 +14,7 @@ const dtOptions = {
     processing: true,
     saveState: true,
     responsive: true,
-    order: [[1, 'asc']],
+    order: [[2, 'asc']],
     pageLength: -1,
     lengthMenu: [
         [-1, 10, 25, 50, 100, 250, 500, 1000],
@@ -34,21 +34,22 @@ const dtOptions = {
     },
     columns: [
         { data: 'enabled' },
-        { data: 'name' },
         { data: 'manifest' },
+        { data: 'name' },
         { data: 'hostPermissions' },
         { data: 'permissions' },
     ],
     columnDefs: [
-        { targets: 0, render: renderSwitch },
-        { targets: 1, render: renderName },
-        { targets: 2, render: renderButtons },
-        { targets: 3, render: renderHosts },
-        { targets: 4, render: renderPerms },
+        { targets: 0, render: renderSwitch, responsivePriority: 2 },
+        { targets: 1, render: renderButtons, responsivePriority: 3 },
+        { targets: 2, render: renderName, responsivePriority: 1 },
+        { targets: 3, render: renderHosts, responsivePriority: 4 },
+        { targets: 4, render: renderPerms, responsivePriority: 5 },
     ],
 }
 
 let table
+let options
 
 /**
  * DOMContentLoaded
@@ -57,8 +58,9 @@ let table
 async function domContentLoaded() {
     console.debug('domContentLoaded')
 
-    // const { options } = await chrome.storage.sync.get(['options'])
-    // console.debug('options:', options)
+    const data = await chrome.storage.sync.get()
+    options = data.options
+    console.debug('options:', options)
 
     const extensions = await getExtensions()
     console.debug('extensions:', extensions)
@@ -184,7 +186,7 @@ function renderButtons(data, type, row, meta) {
 
 function renderHosts(data, type, row, meta) {
     const div = document.createElement('div')
-    const number = 4
+    const number = options.hostsDisplay
     let count = 0
     for (const host of data) {
         const span = document.createElement('pre')

@@ -37,8 +37,13 @@ const dtOptions = {
         { data: 'date' },
     ],
     columnDefs: [
-        { targets: 0, render: renderAction, className: 'text-capitalize' },
-        { targets: 2, render: renderName },
+        {
+            targets: 0,
+            responsivePriority: 1,
+            className: 'text-capitalize',
+            render: renderAction,
+        },
+        { targets: 2, responsivePriority: 1, render: renderName },
         {
             targets: 4,
             render: DataTable.render.datetime('kk:mm - MMM DD, YYYY'),
