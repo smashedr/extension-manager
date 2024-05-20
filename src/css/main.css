@@ -13,3 +13,7 @@ svg {
     display: none;
     z-index: 3;
 }
+
+pre {
+    margin-bottom: 0;
+}

@@ -6,6 +6,8 @@
     <link rel="icon" href="../images/logo16.png" sizes="any">
     <link rel="stylesheet" type="text/css" href="../dist/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="../dist/fontawesome/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="../dist/datatables/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" type="text/css" href="../dist/datatables/buttons.bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="../css/main.css">
     <script type="text/javascript" src="../js/theme.js"></script>
 </head>
@@ -39,14 +41,14 @@
         <div class="col-12">
             <h1>Extension Manager Home</h1>
             <p>Installed Extensions Details</p>
-            <table id="extensions-table" class="table table-hover table-sm">
+            <table id="extensions-table" class="table table-sm table-hover table-responsive w-100">
                 <caption class="visually-hidden">Extensions</caption>
                 <thead>
                 <tr>
                     <th scope="col">Icon</th>
                     <th scope="col">Name / ID</th>
-                    <th scope="col">Buttons</th>
-                    <th scope="col">Host</th>
+                    <th scope="col">Control</th>
+                    <th scope="col">Host Perms</th>
                     <th scope="col">Permissions</th>
                 </tr>
                 </thead>
@@ -109,6 +111,11 @@
 <script type="text/javascript" src="../dist/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="../dist/bootstrap/bootstrap.bundle.min.js"></script>
 <script type="text/javascript" src="../dist/clipboard/clipboard.min.js"></script>
+<script type="text/javascript" src="../dist/datatables/dataTables.min.js"></script>
+<script type="text/javascript" src="../dist/datatables/dataTables.bootstrap5.min.js"></script>
+<script type="text/javascript" src="../dist/datatables/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="../dist/datatables/buttons.bootstrap.min.js"></script>
+<script type="text/javascript" src="../dist/datatables/buttons.colVis.min.js"></script>
 <script type="module" src="../js/main.js"></script>
 <script type="module" src="../js/home.js"></script>
 

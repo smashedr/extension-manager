@@ -43,6 +43,7 @@ const dtOptions = {
 }
 
 let table
+
 /**
  * DOMContentLoaded
  * @function domContentLoaded
