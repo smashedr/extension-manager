@@ -10,6 +10,7 @@ chrome.management.onDisabled.addListener(updateExtensions)
 document.addEventListener('DOMContentLoaded', domContentLoaded)
 
 const dtOptions = {
+    info: true,
     processing: true,
     saveState: true,
     responsive: true,
@@ -25,6 +26,12 @@ const dtOptions = {
         search: 'Filter:',
         zeroRecords: 'No Results',
     },
+    layout: {
+        top2Start: {
+            buttons: ['columnsToggle'],
+        },
+        topStart: 'pageLength',
+    },
     columns: [
         { data: 'enabled' },
         { data: 'name' },
@@ -39,12 +46,6 @@ const dtOptions = {
         { targets: 3, render: renderHosts },
         { targets: 4, render: renderPerms },
     ],
-    layout: {
-        top2Start: {
-            buttons: ['columnsToggle'],
-        },
-        topStart: 'pageLength',
-    },
 }
 
 let table

@@ -50,6 +50,12 @@ gulp.task('jquery', () => {
         .pipe(gulp.dest('src/dist/jquery'))
 })
 
+gulp.task('moment', () => {
+    return gulp
+        .src(['node_modules/moment/min/moment.min.js'])
+        .pipe(gulp.dest('src/dist/moment'))
+})
+
 gulp.task(
     'default',
     gulp.parallel(
@@ -57,6 +63,7 @@ gulp.task(
         'clipboard',
         'datatables',
         'fontawesome',
-        'jquery'
+        'jquery',
+        'moment'
     )
 )

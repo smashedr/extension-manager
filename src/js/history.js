@@ -7,6 +7,7 @@ chrome.storage.onChanged.addListener(onChanged)
 document.addEventListener('DOMContentLoaded', domContentLoaded)
 
 const dtOptions = {
+    info: true,
     processing: true,
     saveState: true,
     responsive: true,
@@ -22,6 +23,12 @@ const dtOptions = {
         search: 'Filter:',
         zeroRecords: 'No Results',
     },
+    layout: {
+        top2Start: {
+            buttons: ['columnsToggle'],
+        },
+        topStart: 'pageLength',
+    },
     columns: [
         { data: 'action' },
         { data: 'version' },
@@ -32,14 +39,12 @@ const dtOptions = {
     columnDefs: [
         { targets: 0, render: renderAction, className: 'text-capitalize' },
         { targets: 2, render: renderName },
-        { targets: 4, render: renderDate },
-    ],
-    layout: {
-        top2Start: {
-            buttons: ['columnsToggle'],
+        {
+            targets: 4,
+            render: DataTable.render.datetime('kk:mm - MMM DD, YYYY'),
         },
-        topStart: 'pageLength',
-    },
+        { targets: '_all', visible: true },
+    ],
 }
 
 let table
@@ -52,8 +57,9 @@ async function domContentLoaded() {
     console.debug('domContentLoaded')
     const { history } = await chrome.storage.local.get(['history'])
     console.debug('history:', history)
-    dtOptions.data = history.reverse()
     table = new DataTable('#history-table', dtOptions)
+    const data = history.reverse()
+    table.rows.add(data).draw()
     window.dispatchEvent(new Event('resize'))
 
     if (chrome.runtime.lastError) {
@@ -104,7 +110,7 @@ function renderName(data, type, row, meta) {
     }
 }
 
-function renderDate(data, type, row, meta) {
-    const date = new Date(data)
-    return date.toLocaleString()
-}
+// function renderDate(data, type, row, meta) {
+//     const date = new Date(data)
+//     return date.toLocaleString()
+// }
