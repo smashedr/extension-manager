@@ -17,6 +17,20 @@ gulp.task('clipboard', () => {
         .pipe(gulp.dest('src/dist/clipboard'))
 })
 
+gulp.task('datatables', () => {
+    return gulp
+        .src([
+            'node_modules/datatables.net/js/dataTables.min.js',
+            'node_modules/datatables.net-bs5/js/dataTables.bootstrap5.min.js',
+            'node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
+            'node_modules/datatables.net-buttons/js/buttons.colVis.min.js',
+            'node_modules/datatables.net-buttons/js/dataTables.buttons.min.js',
+            'node_modules/datatables.net-buttons-bs/js/buttons.bootstrap.min.js',
+            'node_modules/datatables.net-buttons-bs/css/buttons.bootstrap.min.css',
+        ])
+        .pipe(gulp.dest('src/dist/datatables'))
+})
+
 gulp.task('fontawesome', () => {
     return gulp
         .src(
@@ -38,5 +52,11 @@ gulp.task('jquery', () => {
 
 gulp.task(
     'default',
-    gulp.parallel('bootstrap', 'clipboard', 'fontawesome', 'jquery')
+    gulp.parallel(
+        'bootstrap',
+        'clipboard',
+        'datatables',
+        'fontawesome',
+        'jquery'
+    )
 )
