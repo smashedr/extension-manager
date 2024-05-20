@@ -106,6 +106,14 @@ async function updateExtensions() {
         }
         cell.appendChild(document.createTextNode(' '))
 
+        console.log('info.installType:', info.installType)
+        if (info.installType === 'development') {
+            const span = document.createElement('span')
+            // span.classList.add('text-primary')
+            span.textContent = ' (dev) '
+            cell.appendChild(span)
+        }
+
         const span = document.createElement('span')
         span.classList.add('text-primary')
         span.textContent = `v${info.version}`

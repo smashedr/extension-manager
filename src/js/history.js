@@ -41,7 +41,7 @@ async function updateHistory(history) {
         const row = tr.cloneNode(true)
         let cell
 
-        // Name, Version, ID, UUID
+        // Action
         cell = row.cells[0]
         cell.classList.add('text-capitalize')
         cell.textContent = info.action
@@ -60,7 +60,11 @@ async function updateHistory(history) {
         appendClipSpan(row.cells[1], info.version)
 
         // Name
-        appendClipSpan(row.cells[2], info.name)
+        if (info.installType === 'development') {
+            appendClipSpan(row.cells[2], info.name + ' (dev)')
+        } else {
+            appendClipSpan(row.cells[2], info.name)
+        }
 
         // ID
         appendClipSpan(row.cells[3], info.id)
