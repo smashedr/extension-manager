@@ -45,6 +45,11 @@
     </table>
     <hr>
     <form id="options-form" class="options">
+        <div class="col-sm-4 col-12 mb-2">
+            <label for="hostsDisplay" class="form-label"><i class="fa-solid fa-list-ol me-2"></i> Hosts to Display</label>
+            <input id="hostsDisplay" aria-describedby="hostsDisplayHelp" type="number" class="form-control" autocomplete="off">
+            <div class="form-text" id="hostsDisplayHelp"># of Host Perms to Show.</div>
+        </div>
         <div class="form-check form-switch">
             <input class="form-check-input" id="contextMenu" type="checkbox" role="switch">
             <label class="form-check-label" for="contextMenu" aria-describedby="contextMenuHelp">

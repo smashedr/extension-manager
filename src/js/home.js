@@ -1,11 +1,6 @@
 // JS for home.html
 
-import {
-    appendClipSpan,
-    getExtensions,
-    linkClick,
-    showToast,
-} from './export.js'
+import { appendClipSpan, getExtensions, showToast } from './export.js'
 
 chrome.management.onInstalled.addListener(updateExtensions)
 chrome.management.onUninstalled.addListener(updateExtensions)
@@ -14,12 +9,47 @@ chrome.management.onDisabled.addListener(updateExtensions)
 
 document.addEventListener('DOMContentLoaded', domContentLoaded)
 
-// document
-//     .querySelectorAll('a[href]')
-//     .forEach((el) => el.addEventListener('click', linkClick))
+const dtOptions = {
+    info: true,
+    processing: true,
+    saveState: true,
+    responsive: true,
+    order: [[2, 'asc']],
+    pageLength: -1,
+    lengthMenu: [
+        [-1, 10, 25, 50, 100, 250, 500, 1000],
+        ['All', 10, 25, 50, 100, 250, 500, 1000],
+    ],
+    language: {
+        emptyTable: 'No History',
+        lengthMenu: '_MENU_ items',
+        search: 'Filter:',
+        zeroRecords: 'No Results',
+    },
+    layout: {
+        top2Start: {
+            buttons: ['columnsToggle'],
+        },
+        topStart: 'pageLength',
+    },
+    columns: [
+        { data: 'enabled' },
+        { data: 'manifest' },
+        { data: 'name' },
+        { data: 'hostPermissions' },
+        { data: 'permissions' },
+    ],
+    columnDefs: [
+        { targets: 0, render: renderSwitch, responsivePriority: 2 },
+        { targets: 1, render: renderButtons, responsivePriority: 3 },
+        { targets: 2, render: renderName, responsivePriority: 1 },
+        { targets: 3, render: renderHosts, responsivePriority: 4 },
+        { targets: 4, render: renderPerms, responsivePriority: 5 },
+    ],
+}
 
-const extensionsTable = document.getElementById('extensions-table')
-const faCircle = document.querySelector('.d-none .fa-circle')
+let table
+let options
 
 /**
  * DOMContentLoaded
@@ -27,158 +57,203 @@ const faCircle = document.querySelector('.d-none .fa-circle')
  */
 async function domContentLoaded() {
     console.debug('domContentLoaded')
-    const { options } = await chrome.storage.sync.get(['options'])
+
+    const data = await chrome.storage.sync.get()
+    options = data.options
     console.debug('options:', options)
-    // const extensions = await chrome.management.getAll()
-    await updateExtensions()
+
+    const extensions = await getExtensions()
+    console.debug('extensions:', extensions)
+    table = new DataTable('#extensions-table', dtOptions)
+    table.rows.add(extensions).draw()
+    window.dispatchEvent(new Event('resize'))
 
     if (chrome.runtime.lastError) {
         showToast(chrome.runtime.lastError.message, 'warning')
     }
 }
 
-/**
- * Update Extensions Table
- * @function updateExtensions
- */
-async function updateExtensions() {
+async function updateExtensions(info) {
+    console.info('updateExtensions:', info)
     const extensions = await getExtensions()
-    console.debug('updateExtensions:', extensions)
-    const tbody = extensionsTable.querySelector('tbody')
-    tbody.innerHTML = ''
-    const tr = extensionsTable.querySelector('tfoot tr')
-    for (const info of extensions) {
-        const row = tr.cloneNode(true)
-        let cell
+    console.debug('extensions:', extensions)
+    table.clear()
+    table.rows.add(extensions).draw()
+    window.dispatchEvent(new Event('resize'))
+}
 
-        // Icon
-        cell = row.cells[0]
-        const outer = document.createElement('div')
-        outer.classList.add('form-check', 'form-switch')
-        //   <input class="form-check-input" type="checkbox" role="switch" >
-        const inner = document.createElement('input')
-        inner.classList.add('form-check-input')
-        inner.type = 'checkbox'
-        inner.role = 'switch'
-        inner.dataset.id = info.id
-        inner.addEventListener('click', toggleExtension)
-        if (info.enabled) {
-            inner.checked = true
-        }
-        outer.appendChild(inner)
-        cell.appendChild(outer)
-        if (info.icon) {
-            const icon = document.createElement('img')
-            icon.src = info.icon
-            icon.width = 32
-            icon.height = 32
-            cell.appendChild(icon)
-        }
+function renderSwitch(data, type, row, meta) {
+    const div = document.createElement('div')
 
-        // Name, Version, ID, UUID
-        cell = row.cells[1]
-        const fa = faCircle.cloneNode(true)
-        if (info.enabled) {
-            fa.classList.add('text-success')
-        } else {
-            fa.classList.add('text-danger')
-        }
-        fa.addEventListener('click', toggleExtension)
-        fa.setAttribute('role', 'button')
-        fa.dataset.id = info.id
-        cell.appendChild(fa)
-
-        if (info.homepageUrl) {
-            const link = document.createElement('a')
-            link.textContent = info.name
-            // console.debug('info.name:', info.name)
-            // link.classList.add('link-body-emphasis')
-            link.target = '_blank'
-            link.rel = 'noopener'
-            link.href = info.homepageUrl
-            link.title = info.homepageUrl
-            cell.appendChild(link)
-        } else {
-            const span = document.createElement('span')
-            span.textContent = info.name
-            span.classList.add('text-primary-emphasis')
-            cell.appendChild(span)
-        }
-        cell.appendChild(document.createTextNode(' '))
-
-        console.log('info.installType:', info.installType)
-        if (info.installType === 'development') {
-            const span = document.createElement('span')
-            // span.classList.add('text-primary')
-            span.textContent = ' (dev) '
-            cell.appendChild(span)
-        }
-
-        const span = document.createElement('span')
-        span.classList.add('text-primary')
-        span.textContent = `v${info.version}`
-        cell.appendChild(span)
-        cell.appendChild(document.createElement('br'))
-        appendClipSpan(cell, info.id, true, true, ['text-nowrap'])
-        if (info.uuid !== info.id) {
-            appendClipSpan(cell, info.uuid, true, true, [
-                'text-nowrap',
-                'text-dark-emphasis',
-            ])
-        }
-
-        // Buttons
-        cell = row.cells[2]
-        cell.style.maxWidth = '84px'
-        if (info.enabled) {
-            const btn = getButton(
-                'Manifest',
-                info.manifest,
-                'outline-secondary'
-            )
-            cell.appendChild(btn)
-            if (info.optionsUrl) {
-                const btn = getButton(
-                    'Options',
-                    info.optionsUrl,
-                    'outline-primary'
-                )
-                cell.appendChild(btn)
-            }
-        }
-
-        // Host Permissions
-        cell = row.cells[3]
-        const displayCount = 4
-        console.debug('info.hostPermissions:', info.hostPermissions)
-        const hostText = info.hostPermissions.join('\n')
-        console.debug('hostText:', hostText)
-        const hostPermissions = info.hostPermissions.splice(0, displayCount)
-        const div = document.createElement('div')
-        for (const host of hostPermissions) {
-            appendClipSpan(div, host, false, true, ['text-nowrap'])
-        }
-        div.classList.add('clip')
-        div.setAttribute('role', 'button')
-        div.dataset.clipboardText = hostText
-        cell.appendChild(div)
-        if (info.hostPermissions.length) {
-            console.debug('extra hosts count:', info.hostPermissions.length)
-            span.textContent = `+${info.hostPermissions.length - displayCount} More...`
-            span.classList.add('text-danger')
-            cell.appendChild(span)
-        }
-
-        // Permissions
-        const perm = info.permissions?.join(', ') || ''
-        appendClipSpan(row.cells[4], perm)
-
-        tbody.appendChild(row)
+    // Switch
+    const form = document.createElement('div')
+    form.classList.add('form-check', 'form-switch')
+    const input = document.createElement('input')
+    input.classList.add('form-check-input')
+    input.type = 'checkbox'
+    input.role = 'switch'
+    input.dataset.id = row.id
+    input.addEventListener('click', toggleExtension)
+    if (row.enabled) {
+        input.checked = true
     }
+    form.appendChild(input)
+    div.appendChild(form)
+
+    // Icon
+    if (row.icon) {
+        const icon = document.createElement('img')
+        icon.src = row.icon
+        icon.width = 32
+        icon.height = 32
+        div.appendChild(icon)
+    }
+    return div
+}
+
+function renderName(data, type, row, meta) {
+    const div = document.createElement('div')
+
+    // Enable / Disable
+    const fa = document.querySelector('.d-none .fa-circle').cloneNode(true)
+    if (row.enabled) {
+        fa.classList.add('text-success')
+    } else {
+        fa.classList.add('text-danger')
+    }
+    fa.addEventListener('click', toggleExtension)
+    fa.setAttribute('role', 'button')
+    fa.dataset.id = row.id
+    div.appendChild(fa)
+
+    // Name / URL
+    if (row.homepageUrl) {
+        const link = document.createElement('a')
+        link.textContent = row.name
+        link.target = '_blank'
+        link.rel = 'noopener'
+        link.href = row.homepageUrl
+        link.title = row.homepageUrl
+        div.appendChild(link)
+    } else {
+        const span = document.createElement('span')
+        span.textContent = row.name
+        span.classList.add('text-primary-emphasis')
+        div.appendChild(span)
+    }
+    div.appendChild(document.createTextNode(' '))
+
+    // Development
+    if (row.installType === 'development') {
+        const span = document.createElement('span')
+        // span.classList.add('text-primary')
+        span.textContent = ' (dev) '
+        div.appendChild(span)
+    }
+
+    // Version
+    const span = document.createElement('span')
+    span.classList.add('text-primary')
+    span.textContent = `v${row.version}`
+    div.appendChild(span)
+    div.appendChild(document.createElement('br'))
+
+    // ID / UUID
+    appendClipSpan(div, row.id, true, true, ['text-nowrap'])
+    if (row.uuid !== row.id) {
+        appendClipSpan(div, row.uuid, true, true, [
+            'text-nowrap',
+            'text-dark-emphasis',
+        ])
+    }
+    return div
+}
+
+function renderButtons(data, type, row, meta) {
+    const div = document.createElement('div')
+
+    div.style.maxWidth = '86px'
+    if (row.enabled) {
+        const btn = getButton('Manifest', row.manifest, 'outline-secondary')
+        div.appendChild(btn)
+        if (row.optionsUrl) {
+            const btn = getButton('Options', row.optionsUrl, 'outline-primary')
+            div.appendChild(btn)
+        }
+    }
+    return div
+}
+
+function renderHosts(data, type, row, meta) {
+    const div = document.createElement('div')
+    const number = options.hostsDisplay
+    let count = 0
+    for (const host of data) {
+        const span = document.createElement('pre')
+        span.textContent = host
+        div.appendChild(span)
+        count += 1
+        if (count === number) {
+            break
+        }
+    }
+    if (data.length > number) {
+        const span = document.createElement('span')
+        span.textContent = `+${data.length - number} More...`
+        span.classList.add('text-danger')
+        div.appendChild(span)
+    }
+    return div
+
+    // TODO: Determine why data.splice is not working...
+
+    // if (data.length > 4) {
+    //     return 'more than 4'
+    // }
+    // const div = document.createElement('div')
+    // const spliceData = data.splice(0, 4)
+    // console.debug('spliceData:', spliceData)
+    // for (const host of spliceData) {
+    //     const span = document.createElement('pre')
+    //     span.textContent = host
+    //     div.appendChild(span)
+    // }
+    // return div
+
+    // // console.log(`${row.name}:`, data)
+    // const div = document.createElement('div')
+    // const display = document.createElement('div')
+    // // console.debug('info.hostPermissions:', info.hostPermissions)
+    // // const hostText = data.join('\n')
+    // const hostPermissions = data.splice(0, 4)
+    // // console.debug('hostPermissions:', hostPermissions)
+    // console.log(`${row.name}:`, hostPermissions)
+    // for (const host of hostPermissions) {
+    //     // appendClipSpan(display, host, false, true, ['text-nowrap'])
+    //     const span = document.createElement('pre')
+    //     console.log('adding host:', host)
+    //     span.textContent = 'wtf'
+    //     display.appendChild(span)
+    // }
+    // // display.classList.add('clip')
+    // // display.setAttribute('role', 'button')
+    // // display.dataset.clipboardText = hostText
+    // div.appendChild(display)
+    // // if (data.length) {
+    // //     // console.debug('extra hosts count:', row.hostPermissions.length)
+    // //     const span = document.createElement('span')
+    // //     span.textContent = `+${data.length - 4} More...`
+    // //     span.classList.add('text-danger')
+    // //     div.appendChild(span)
+    // // }
+    // return div
+}
+
+function renderPerms(data, type, row, meta) {
+    return data?.join(', ') || ''
 }
 
 function getButton(text, href, style) {
-    // const link = document.createElement('a')
     const link = document.querySelector('.d-none a').cloneNode(true)
     link.addEventListener('click', openLink)
     link.classList.add(`btn-${style}`)

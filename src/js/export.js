@@ -22,7 +22,7 @@ export async function saveOptions(event) {
     } else if (event.target.type === 'checkbox') {
         value = event.target.checked
     } else if (event.target.type === 'number') {
-        value = event.target.value.toString()
+        value = parseInt(event.target.value)
     } else {
         value = event.target.value
     }

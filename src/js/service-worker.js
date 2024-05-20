@@ -40,6 +40,7 @@ async function onInstalled(details) {
     const githubURL = 'https://github.com/smashedr/extension-manager'
     const options = await Promise.resolve(
         setDefaultOptions({
+            hostsDisplay: 4,
             contextMenu: true,
             showUpdate: false,
         })

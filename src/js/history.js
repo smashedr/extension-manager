@@ -1,16 +1,58 @@
 // JS for home.html
 
-import { appendClipSpan, linkClick, showToast } from './export.js'
+import { showToast } from './export.js'
 
 chrome.storage.onChanged.addListener(onChanged)
 
 document.addEventListener('DOMContentLoaded', domContentLoaded)
 
-// document
-//     .querySelectorAll('a[href]')
-//     .forEach((el) => el.addEventListener('click', linkClick))
+const dtOptions = {
+    info: true,
+    processing: true,
+    saveState: true,
+    responsive: true,
+    order: [[4, 'des']],
+    pageLength: 100,
+    lengthMenu: [
+        [-1, 10, 25, 50, 100, 250, 500, 1000],
+        ['All', 10, 25, 50, 100, 250, 500, 1000],
+    ],
+    language: {
+        emptyTable: 'No History',
+        lengthMenu: '_MENU_ items',
+        search: 'Filter:',
+        zeroRecords: 'No Results',
+    },
+    layout: {
+        top2Start: {
+            buttons: ['columnsToggle'],
+        },
+        topStart: 'pageLength',
+    },
+    columns: [
+        { data: 'action' },
+        { data: 'version' },
+        { data: 'name' },
+        { data: 'id' },
+        { data: 'date' },
+    ],
+    columnDefs: [
+        {
+            targets: 0,
+            responsivePriority: 1,
+            className: 'text-capitalize',
+            render: renderAction,
+        },
+        { targets: 2, responsivePriority: 1, render: renderName },
+        {
+            targets: 4,
+            render: DataTable.render.datetime('kk:mm - MMM DD, YYYY'),
+        },
+        { targets: '_all', visible: true },
+    ],
+}
 
-const historyTable = document.getElementById('history-table')
+let table
 
 /**
  * DOMContentLoaded
@@ -19,61 +61,14 @@ const historyTable = document.getElementById('history-table')
 async function domContentLoaded() {
     console.debug('domContentLoaded')
     const { history } = await chrome.storage.local.get(['history'])
-    console.debug('updateExtensions:', history)
-    updateHistory(history)
+    console.debug('history:', history)
+    table = new DataTable('#history-table', dtOptions)
+    const data = history.reverse()
+    table.rows.add(data).draw()
+    window.dispatchEvent(new Event('resize'))
 
     if (chrome.runtime.lastError) {
         showToast(chrome.runtime.lastError.message, 'warning')
-    }
-}
-
-/**
- * Update History Table
- * @function updateExtensions
- */
-async function updateHistory(history) {
-    console.debug('updateExtensions:', history)
-    const tbody = historyTable.querySelector('tbody')
-    tbody.innerHTML = ''
-    const tr = historyTable.querySelector('tfoot tr')
-    for (const info of history.reverse()) {
-        // console.debug('info:', info)
-        const row = tr.cloneNode(true)
-        let cell
-
-        // Action
-        cell = row.cells[0]
-        cell.classList.add('text-capitalize')
-        cell.textContent = info.action
-        console.log(info.action)
-        if (info.action === 'install') {
-            cell.classList.add('text-success')
-        } else if (info.action === 'uninstall') {
-            cell.classList.add('text-danger')
-        } else if (info.action === 'enable') {
-            cell.classList.add('text-success-emphasis')
-        } else if (info.action === 'disable') {
-            cell.classList.add('text-warning-emphasis')
-        }
-
-        // Version
-        appendClipSpan(row.cells[1], info.version)
-
-        // Name
-        if (info.installType === 'development') {
-            appendClipSpan(row.cells[2], info.name + ' (dev)')
-        } else {
-            appendClipSpan(row.cells[2], info.name)
-        }
-
-        // ID
-        appendClipSpan(row.cells[3], info.id)
-
-        // Name, Version, ID, UUID
-        const date = new Date(info.date)
-        appendClipSpan(row.cells[4], date.toLocaleString())
-
-        tbody.appendChild(row)
     }
 }
 
@@ -86,8 +81,41 @@ async function updateHistory(history) {
 function onChanged(changes, namespace) {
     console.debug('onChanged:', changes, namespace)
     for (const [key, { newValue }] of Object.entries(changes)) {
-        if (namespace === 'local' && key === 'history' && newValue) {
-            updateHistory(newValue)
+        if (namespace === 'local' && key === 'history' && newValue?.length) {
+            // console.log('newValue:', newValue)
+            const item = newValue.slice(-1)[0]
+            console.log('table.row.add:', item)
+            table.row.add(item).draw()
         }
     }
 }
+
+function renderAction(data, type, row, meta) {
+    // TODO: Determine how to set className from this function
+    // console.debug('renderAction:', data, type, row, meta)
+    const span = document.createElement('span')
+    span.textContent = data
+    if (data === 'install') {
+        span.classList.add('text-success')
+    } else if (data === 'uninstall') {
+        span.classList.add('text-danger')
+    } else if (data === 'enable') {
+        span.classList.add('text-success-emphasis')
+    } else if (data === 'disable') {
+        span.classList.add('text-warning-emphasis')
+    }
+    return span
+}
+
+function renderName(data, type, row, meta) {
+    if (row.installType === 'development') {
+        return `${data} (dev)`
+    } else {
+        return data
+    }
+}
+
+// function renderDate(data, type, row, meta) {
+//     const date = new Date(data)
+//     return date.toLocaleString()
+// }
