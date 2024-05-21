@@ -25,6 +25,8 @@ gulp.task('datatables', () => {
             'node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
             'node_modules/datatables.net-buttons/js/buttons.colVis.min.js',
             'node_modules/datatables.net-buttons/js/dataTables.buttons.min.js',
+            'node_modules/datatables.net-buttons/js/buttons.html5.min.js',
+            'node_modules/datatables.net-buttons/js/buttons.print.min.js',
             'node_modules/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js',
             'node_modules/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css',
         ])
@@ -56,6 +58,15 @@ gulp.task('moment', () => {
         .pipe(gulp.dest('src/dist/moment'))
 })
 
+gulp.task('pdfmake', () => {
+    return gulp
+        .src([
+            'node_modules/pdfmake/build/pdfmake.min.js',
+            'node_modules/pdfmake/build/vfs_fonts.js',
+        ])
+        .pipe(gulp.dest('src/dist/pdfmake'))
+})
+
 gulp.task(
     'default',
     gulp.parallel(
@@ -64,6 +75,7 @@ gulp.task(
         'datatables',
         'fontawesome',
         'jquery',
-        'moment'
+        'moment',
+        'pdfmake'
     )
 )

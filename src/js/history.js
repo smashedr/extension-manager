@@ -29,6 +29,35 @@ const dtOptions = {
                 {
                     extend: 'colvis',
                     columns: [1, 3, 4],
+                    postfixButtons: ['colvisRestore'],
+                },
+                {
+                    extend: 'copy',
+                    exportOptions: {
+                        orthogonal: 'export',
+                        columns: [':visible'],
+                    },
+                },
+                {
+                    extend: 'csv',
+                    exportOptions: {
+                        orthogonal: 'export',
+                        columns: [':visible'],
+                    },
+                },
+                {
+                    extend: 'pdf',
+                    exportOptions: {
+                        orthogonal: 'export',
+                        columns: [':visible'],
+                    },
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        orthogonal: 'export',
+                        columns: [':visible'],
+                    },
                 },
             ],
         },
