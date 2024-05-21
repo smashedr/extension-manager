@@ -30,7 +30,12 @@ const dtOptions = {
     },
     layout: {
         top2Start: {
-            buttons: ['colvis'],
+            buttons: [
+                {
+                    extend: 'colvis',
+                    columns: [0, 1, 3, 4],
+                },
+            ],
         },
         topStart: 'pageLength',
         // top2End: {
