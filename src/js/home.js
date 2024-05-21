@@ -13,7 +13,9 @@ const dtOptions = {
     info: true,
     processing: true,
     saveState: true,
-    responsive: true,
+    responsive: {
+        breakpoints: [{ name: 'enabled', width: 140 }],
+    },
     order: [[2, 'asc']],
     pageLength: -1,
     lengthMenu: [
@@ -31,6 +33,10 @@ const dtOptions = {
             buttons: ['columnsToggle'],
         },
         topStart: 'pageLength',
+        // top2End: {
+        //     buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+        // },
+        topEnd: 'search',
     },
     columns: [
         { data: 'enabled' },
@@ -40,11 +46,36 @@ const dtOptions = {
         { data: 'permissions' },
     ],
     columnDefs: [
-        { targets: 0, render: renderSwitch, responsivePriority: 2 },
-        { targets: 1, render: renderButtons, responsivePriority: 3 },
-        { targets: 2, render: renderName, responsivePriority: 1 },
-        { targets: 3, render: renderHosts, responsivePriority: 4 },
-        { targets: 4, render: renderPerms, responsivePriority: 5 },
+        {
+            targets: 0,
+            responsivePriority: 2,
+            render: renderSwitch,
+            orderable: false,
+        },
+        {
+            targets: 1,
+            responsivePriority: 3,
+            render: renderButtons,
+            orderable: false,
+        },
+        {
+            targets: 2,
+            responsivePriority: 1,
+            render: renderName,
+            orderable: true,
+        },
+        {
+            targets: 3,
+            responsivePriority: 4,
+            render: renderHosts,
+            orderable: false,
+        },
+        {
+            targets: 4,
+            responsivePriority: 5,
+            render: renderPerms,
+            orderable: false,
+        },
     ],
 }
 
@@ -141,7 +172,13 @@ function renderName(data, type, row, meta) {
         span.classList.add('text-primary-emphasis')
         div.appendChild(span)
     }
-    div.appendChild(document.createTextNode(' '))
+
+    // Version
+    const span = document.createElement('span')
+    span.classList.add('text-primary')
+    span.textContent = ` v${row.version}`
+    div.appendChild(span)
+    // div.appendChild(document.createElement('br'))
 
     // Development
     if (row.installType === 'development') {
@@ -149,13 +186,8 @@ function renderName(data, type, row, meta) {
         // span.classList.add('text-primary')
         span.textContent = ' (dev) '
         div.appendChild(span)
+        // appendClipSpan(div, ' (dev)', false, false)
     }
-
-    // Version
-    const span = document.createElement('span')
-    span.classList.add('text-primary')
-    span.textContent = `v${row.version}`
-    div.appendChild(span)
     div.appendChild(document.createElement('br'))
 
     // ID / UUID
