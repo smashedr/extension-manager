@@ -167,26 +167,15 @@ function renderName(data, type, row, meta) {
         link.title = row.homepageUrl
         div.appendChild(link)
     } else {
-        const span = document.createElement('span')
-        span.textContent = row.name
-        span.classList.add('text-primary-emphasis')
-        div.appendChild(span)
+        appendClipSpan(div, row.name, false, false, ['text-primary-emphasis'])
     }
 
     // Version
-    const span = document.createElement('span')
-    span.classList.add('text-primary')
-    span.textContent = ` v${row.version}`
-    div.appendChild(span)
-    // div.appendChild(document.createElement('br'))
+    appendClipSpan(div, ` v${row.version}`, false, false, ['text-primary'])
 
     // Development
     if (row.installType === 'development') {
-        const span = document.createElement('span')
-        // span.classList.add('text-primary')
-        span.textContent = ' (dev) '
-        div.appendChild(span)
-        // appendClipSpan(div, ' (dev)', false, false)
+        appendClipSpan(div, ' (dev)', false, false)
     }
     div.appendChild(document.createElement('br'))
 
@@ -205,13 +194,14 @@ function renderButtons(data, type, row, meta) {
     const div = document.createElement('div')
 
     div.style.maxWidth = '86px'
-    if (row.enabled) {
-        const btn = getButton('Manifest', row.manifest, 'outline-secondary')
+    const btn = getButton('Manifest', data, 'outline-secondary')
+    if (!row.enabled) btn.classList.add('disabled')
+    div.appendChild(btn)
+    console.log(`${row.name}`, row.optionsUrl)
+    if (row.optionsUrl) {
+        const btn = getButton('Options', row.optionsUrl, 'outline-primary')
+        if (!row.enabled) btn.classList.add('disabled')
         div.appendChild(btn)
-        if (row.optionsUrl) {
-            const btn = getButton('Options', row.optionsUrl, 'outline-primary')
-            div.appendChild(btn)
-        }
     }
     return div
 }
@@ -221,19 +211,18 @@ function renderHosts(data, type, row, meta) {
     const number = options.hostsDisplay
     let count = 0
     for (const host of data) {
-        const span = document.createElement('pre')
-        span.textContent = host
-        div.appendChild(span)
+        const pre = document.createElement('pre')
+        pre.textContent = host
+        div.appendChild(pre)
         count += 1
         if (count === number) {
             break
         }
     }
     if (data.length > number) {
-        const span = document.createElement('span')
-        span.textContent = `+${data.length - number} More...`
-        span.classList.add('text-danger')
-        div.appendChild(span)
+        appendClipSpan(div, `+${data.length - number} More...`, false, false, [
+            'text-danger',
+        ])
     }
     return div
 

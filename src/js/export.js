@@ -232,7 +232,7 @@ function getIconUrl(icons, size = 32) {
 export function appendClipSpan(
     parent,
     text,
-    clip = true,
+    clip = false,
     br = false,
     classes = []
 ) {

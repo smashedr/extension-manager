@@ -28,6 +28,10 @@ const dtOptions = {
             buttons: ['columnsToggle'],
         },
         topStart: 'pageLength',
+        // top2End: {
+        //     buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+        // },
+        topEnd: 'search',
     },
     columns: [
         { data: 'action' },
