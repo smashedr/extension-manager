@@ -25,7 +25,7 @@ const dtOptions = {
     },
     layout: {
         top2Start: {
-            buttons: ['columnsToggle'],
+            buttons: ['colvis'],
         },
         topStart: 'pageLength',
         // top2End: {
