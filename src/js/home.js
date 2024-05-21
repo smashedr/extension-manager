@@ -197,7 +197,6 @@ function renderButtons(data, type, row, meta) {
     const btn = getButton('Manifest', data, 'outline-secondary')
     if (!row.enabled) btn.classList.add('disabled')
     div.appendChild(btn)
-    console.log(`${row.name}`, row.optionsUrl)
     if (row.optionsUrl) {
         const btn = getButton('Options', row.optionsUrl, 'outline-primary')
         if (!row.enabled) btn.classList.add('disabled')

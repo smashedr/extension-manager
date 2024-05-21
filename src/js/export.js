@@ -168,8 +168,8 @@ export function showToast(message, type = 'success') {
  * @return  {Array}
  */
 export async function getExtensions() {
+    console.debug('getExtensions')
     const extensions = await chrome.management.getAll()
-    console.debug('getExtensions:', extensions)
     const results = []
     for (const info of extensions) {
         if (

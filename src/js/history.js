@@ -45,14 +45,32 @@ const dtOptions = {
             targets: 0,
             responsivePriority: 1,
             className: 'text-capitalize',
+            // createdCell: createAction,
             render: renderAction,
         },
-        { targets: 2, responsivePriority: 1, render: renderName },
+        {
+            targets: 1,
+            responsivePriority: 10,
+        },
+        {
+            targets: 2,
+            responsivePriority: 1,
+            render: renderName,
+        },
+        {
+            targets: 3,
+            responsivePriority: 11,
+        },
         {
             targets: 4,
+            responsivePriority: 3,
+            // render: renderDate,
             render: DataTable.render.datetime('kk:mm - MMM DD, YYYY'),
         },
-        { targets: '_all', visible: true },
+        {
+            targets: '_all',
+            visible: true,
+        },
     ],
 }
 
@@ -94,8 +112,20 @@ function onChanged(changes, namespace) {
     }
 }
 
+// function createAction(td, meta, data, row, col) {
+//     // console.log(td, meta, rowData, row, col)
+//     if (data.action === 'install') {
+//         td.classList.add('text-success')
+//     } else if (data.action === 'uninstall') {
+//         td.classList.add('text-danger')
+//     } else if (data.action === 'enable') {
+//         td.classList.add('text-success-emphasis')
+//     } else if (data.action === 'disable') {
+//         td.classList.add('text-warning-emphasis')
+//     }
+// }
+
 function renderAction(data, type, row, meta) {
-    // TODO: Determine how to set className from this function
     // console.debug('renderAction:', data, type, row, meta)
     const span = document.createElement('span')
     span.textContent = data

@@ -193,7 +193,7 @@ async function setDefaultOptions(defaultOptions) {
 
 async function setExtensions() {
     const extensions = await getExtensions()
-    console.debug('setExtensions:', extensions)
+    console.debug('setExtensions: extensions:', extensions)
     // let { installed } = await chrome.storage.local.get(['installed'])
     const installed = {}
     for (const info of extensions) {
