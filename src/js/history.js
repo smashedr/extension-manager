@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', domContentLoaded)
 const dtOptions = {
     info: true,
     processing: true,
-    saveState: true,
+    stateSave: true,
     responsive: true,
     order: [[4, 'des']],
     pageLength: 100,

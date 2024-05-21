@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', domContentLoaded)
 const dtOptions = {
     info: true,
     processing: true,
-    saveState: true,
+    stateSave: true,
     responsive: {
         breakpoints: [{ name: 'enabled', width: 140 }],
     },
