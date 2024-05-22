@@ -233,7 +233,7 @@ function renderName(data, type, row, meta) {
     }
 
     // Version
-    appendClipSpan(div, ` v${row.version}`, false, false, ['text-primary'])
+    appendClipSpan(div, ` v${row.version} `, false, false, ['text-primary'])
 
     // Development
     if (row.installType === 'development') {
@@ -242,7 +242,7 @@ function renderName(data, type, row, meta) {
     div.appendChild(document.createElement('br'))
 
     // ID / UUID
-    appendClipSpan(div, row.id, true, true, ['text-nowrap'])
+    appendClipSpan(div, `${row.id} `, true, true, ['text-nowrap'])
     if (row.uuid !== row.id) {
         appendClipSpan(div, row.uuid, true, true, [
             'text-nowrap',
@@ -275,6 +275,7 @@ function renderHosts(data, type, row, meta) {
         const pre = document.createElement('pre')
         pre.textContent = host
         div.appendChild(pre)
+        div.appendChild(document.createTextNode(' '))
         count += 1
         if (count === number) {
             break

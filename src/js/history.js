@@ -119,7 +119,7 @@ const dtOptions = {
             targets: 4,
             responsivePriority: 3,
             // render: renderDate,
-            render: DataTable.render.datetime('kk:mm - MMM DD, YYYY'),
+            render: DataTable.render.datetime('kk:mm MMM DD, YYYY'),
         },
         {
             targets: '_all',
