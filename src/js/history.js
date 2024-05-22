@@ -19,47 +19,67 @@ const dtOptions = {
     ],
     language: {
         emptyTable: 'No History',
-        lengthMenu: '_MENU_ items',
+        lengthMenu: '_MENU_ History',
         search: 'Filter:',
+        searchPlaceholder: 'Type to Filter...',
         zeroRecords: 'No Results',
     },
     layout: {
         top2Start: {
-            buttons: [
-                {
-                    extend: 'colvis',
-                    columns: [1, 3, 4],
-                    postfixButtons: ['colvisRestore'],
-                },
-                {
-                    extend: 'copy',
-                    exportOptions: {
-                        orthogonal: 'export',
-                        columns: [':visible'],
+            buttons: {
+                dom: {
+                    button: {
+                        className: 'btn btn-sm btn-outline-primary',
                     },
                 },
-                {
-                    extend: 'csv',
-                    exportOptions: {
-                        orthogonal: 'export',
-                        columns: [':visible'],
+                buttons: [
+                    {
+                        extend: 'colvis',
+                        text: 'Column Visibility',
+                        // className: 'btn-primary',
+                        columns: [1, 3, 4],
+                        postfixButtons: ['colvisRestore'],
                     },
-                },
-                {
-                    extend: 'pdf',
-                    exportOptions: {
-                        orthogonal: 'export',
-                        columns: [':visible'],
+                    {
+                        extend: 'copy',
+                        text: 'Copy',
+                        // className: 'btn-primary',
+                        title: null,
+                        exportOptions: {
+                            orthogonal: 'export',
+                            columns: [':visible'],
+                        },
                     },
-                },
-                {
-                    extend: 'print',
-                    exportOptions: {
-                        orthogonal: 'export',
-                        columns: [':visible'],
+                    {
+                        extend: 'csv',
+                        text: 'CSV',
+                        // className: 'btn-primary',
+                        title: 'history',
+                        exportOptions: {
+                            orthogonal: 'export',
+                            columns: [':visible'],
+                        },
                     },
-                },
-            ],
+                    {
+                        extend: 'pdf',
+                        text: 'PDF',
+                        // className: 'btn-primary',
+                        exportOptions: {
+                            orthogonal: 'export',
+                            columns: [':visible'],
+                        },
+                    },
+                    {
+                        extend: 'print',
+                        text: 'Print',
+                        // className: 'btn-primary',
+                        exportOptions: {
+                            orthogonal: 'export',
+                            columns: [':visible'],
+                        },
+                    },
+                ],
+            },
         },
         topStart: 'pageLength',
         // top2End: {

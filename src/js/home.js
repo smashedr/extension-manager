@@ -24,47 +24,67 @@ const dtOptions = {
     ],
     language: {
         emptyTable: 'No History',
-        lengthMenu: '_MENU_ items',
+        lengthMenu: '_MENU_ Extensions',
         search: 'Filter:',
+        searchPlaceholder: 'Type to Filter...',
         zeroRecords: 'No Results',
     },
     layout: {
         top2Start: {
-            buttons: [
-                {
-                    extend: 'colvis',
-                    columns: [0, 1, 3, 4],
-                    postfixButtons: ['colvisRestore'],
-                },
-                {
-                    extend: 'copy',
-                    exportOptions: {
-                        orthogonal: 'export',
-                        columns: [':visible'],
+            buttons: {
+                dom: {
+                    button: {
+                        className: 'btn btn-sm btn-outline-primary',
                     },
                 },
-                {
-                    extend: 'csv',
-                    exportOptions: {
-                        orthogonal: 'export',
-                        columns: [':visible'],
+                buttons: [
+                    {
+                        extend: 'colvis',
+                        text: 'Column Visibility',
+                        // className: 'btn-primary',
+                        columns: [0, 1, 3, 4],
+                        postfixButtons: ['colvisRestore'],
                     },
-                },
-                {
-                    extend: 'pdf',
-                    exportOptions: {
-                        orthogonal: 'export',
-                        columns: [':visible'],
+                    {
+                        extend: 'copy',
+                        text: 'Copy',
+                        // className: 'btn-primary',
+                        title: null,
+                        exportOptions: {
+                            orthogonal: 'export',
+                            columns: [':visible'],
+                        },
                     },
-                },
-                {
-                    extend: 'print',
-                    exportOptions: {
-                        orthogonal: 'export',
-                        columns: [':visible'],
+                    {
+                        extend: 'csv',
+                        text: 'CSV',
+                        // className: 'btn-primary',
+                        title: 'extensions',
+                        exportOptions: {
+                            orthogonal: 'export',
+                            columns: [':visible'],
+                        },
                     },
-                },
-            ],
+                    {
+                        extend: 'pdf',
+                        text: 'PDF',
+                        // className: 'btn-primary',
+                        exportOptions: {
+                            orthogonal: 'export',
+                            columns: [':visible'],
+                        },
+                    },
+                    {
+                        extend: 'print',
+                        text: 'Print',
+                        // className: 'btn-primary',
+                        exportOptions: {
+                            orthogonal: 'export',
+                            columns: [':visible'],
+                        },
+                    },
+                ],
+            },
         },
         topStart: 'pageLength',
         // top2End: {
@@ -118,7 +138,7 @@ const dtOptions = {
 }
 
 let table
-let options
+let extOptions
 
 /**
  * DOMContentLoaded
@@ -127,9 +147,9 @@ let options
 async function domContentLoaded() {
     console.debug('domContentLoaded')
 
-    const data = await chrome.storage.sync.get()
-    options = data.options
-    console.debug('options:', options)
+    const { options } = await chrome.storage.sync.get(['options'])
+    extOptions = options
+    console.debug('extOptions:', extOptions)
 
     const extensions = await getExtensions()
     console.debug('extensions:', extensions)
@@ -245,7 +265,7 @@ function renderButtons(data, type, row, meta) {
 
 function renderHosts(data, type, row, meta) {
     const div = document.createElement('div')
-    const number = options.hostsDisplay
+    const number = extOptions.hostsDisplay
     let count = 0
     for (const host of data) {
         const pre = document.createElement('pre')
@@ -257,9 +277,8 @@ function renderHosts(data, type, row, meta) {
         }
     }
     if (data.length > number) {
-        appendClipSpan(div, `+${data.length - number} More...`, false, false, [
-            'text-danger',
-        ])
+        const text = `+${data.length - number} More...`
+        appendClipSpan(div, text, false, false, ['text-danger'])
     }
     return div
 
