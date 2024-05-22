@@ -52,7 +52,7 @@ const dtOptions = {
                         title: null,
                         exportOptions: {
                             orthogonal: 'export',
-                            columns: [':visible'],
+                            columns: ':visible',
                         },
                     },
                     {
@@ -62,7 +62,8 @@ const dtOptions = {
                         title: 'extensions',
                         exportOptions: {
                             orthogonal: 'export',
-                            columns: [':visible'],
+                            columns:
+                                ':visible:not(:first-child):not(:nth-child(2))',
                         },
                     },
                     {
@@ -71,7 +72,9 @@ const dtOptions = {
                         // className: 'btn-primary',
                         exportOptions: {
                             orthogonal: 'export',
-                            columns: [':visible'],
+                            // columns: ':visible:not(:eq(0)):not(:eq(0))',
+                            columns:
+                                ':visible:not(:first-child):not(:nth-child(2))',
                         },
                     },
                     {
@@ -80,7 +83,8 @@ const dtOptions = {
                         // className: 'btn-primary',
                         exportOptions: {
                             orthogonal: 'export',
-                            columns: [':visible'],
+                            columns:
+                                ':visible:not(:first-child):not(:nth-child(2))',
                         },
                     },
                 ],

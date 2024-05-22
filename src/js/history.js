@@ -47,7 +47,7 @@ const dtOptions = {
                         title: null,
                         exportOptions: {
                             orthogonal: 'export',
-                            columns: [':visible'],
+                            columns: ':visible',
                         },
                     },
                     {
@@ -57,7 +57,7 @@ const dtOptions = {
                         title: 'history',
                         exportOptions: {
                             orthogonal: 'export',
-                            columns: [':visible'],
+                            columns: ':visible',
                         },
                     },
                     {
@@ -66,7 +66,7 @@ const dtOptions = {
                         // className: 'btn-primary',
                         exportOptions: {
                             orthogonal: 'export',
-                            columns: [':visible'],
+                            columns: ':visible',
                         },
                     },
                     {
@@ -75,7 +75,7 @@ const dtOptions = {
                         // className: 'btn-primary',
                         exportOptions: {
                             orthogonal: 'export',
-                            columns: [':visible'],
+                            columns: ':visible',
                         },
                     },
                 ],
