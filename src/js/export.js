@@ -194,6 +194,7 @@ export async function getExtensions() {
         info.icon = getIconUrl(info.icons, 32)
         info.uuid = uuid
         info.manifest = `${browserSpec('protocol')}://${uuid}/manifest.json`
+        info.permissions = info.permissions || []
         results.push(info)
     }
     results.sort((a, b) => a.name.localeCompare(b.name))

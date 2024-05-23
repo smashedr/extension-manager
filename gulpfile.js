@@ -29,6 +29,7 @@ gulp.task('datatables', () => {
             'node_modules/datatables.net-buttons/js/buttons.print.min.js',
             'node_modules/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js',
             'node_modules/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css',
+            'node_modules/datatables.net-responsive/js/dataTables.responsive.min.js',
         ])
         .pipe(gulp.dest('src/dist/datatables'))
 })

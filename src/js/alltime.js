@@ -1,6 +1,6 @@
 // JS for home.html
 
-import { showToast } from './export.js'
+// import { showToast } from './export.js'
 
 // chrome.storage.onChanged.addListener(onChanged)
 
@@ -9,7 +9,10 @@ document.addEventListener('DOMContentLoaded', domContentLoaded)
 const dtOptions = {
     info: true,
     processing: true,
-    stateSave: true,
+    stateSave: false,
+    stateSaveParams: function (settings, data) {
+        data.search.search = ''
+    },
     responsive: true,
     order: [[4, 'des']],
     pageLength: -1,
@@ -138,9 +141,9 @@ async function domContentLoaded() {
     table.rows.add(data).draw()
     window.dispatchEvent(new Event('resize'))
 
-    if (chrome.runtime.lastError) {
-        showToast(chrome.runtime.lastError.message, 'warning')
-    }
+    // if (chrome.runtime.lastError) {
+    //     showToast(chrome.runtime.lastError.message, 'warning')
+    // }
 }
 
 // /**

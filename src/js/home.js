@@ -12,10 +12,17 @@ document.addEventListener('DOMContentLoaded', domContentLoaded)
 const dtOptions = {
     info: true,
     processing: true,
-    stateSave: true,
-    responsive: {
-        breakpoints: [{ name: 'enabled', width: 140 }],
+    stateSave: false,
+    stateSaveParams: function (settings, data) {
+        data.search.search = ''
     },
+    responsive: true,
+    // responsive: {
+    //     breakpoints: [
+    //         { name: 'name', width: Infinity },
+    //         { name: 'permissions', width: 1000 },
+    //     ],
+    // },
     order: [[2, 'asc']],
     pageLength: -1,
     lengthMenu: [
@@ -161,9 +168,9 @@ async function domContentLoaded() {
     table.rows.add(extensions).draw()
     window.dispatchEvent(new Event('resize'))
 
-    if (chrome.runtime.lastError) {
-        showToast(chrome.runtime.lastError.message, 'warning')
-    }
+    // if (chrome.runtime.lastError) {
+    //     showToast(chrome.runtime.lastError.message, 'warning')
+    // }
 }
 
 async function updateExtensions(info) {
