@@ -2,6 +2,14 @@
 
 import { showToast } from './export.js'
 
+// Manually Set Theme for DataTables
+let prefers = window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light'
+let html = document.querySelector('html')
+html.classList.add(prefers)
+html.setAttribute('data-bs-theme', prefers)
+
 const backToTop = document.getElementById('back-to-top')
 if (backToTop) {
     window.addEventListener('scroll', debounce(onScroll))

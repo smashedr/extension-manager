@@ -173,6 +173,12 @@ async function setDefaultOptions(defaultOptions) {
         await chrome.storage.local.set({ history })
         console.log('initialize empty history')
     }
+    let { alltime } = await chrome.storage.sync.get(['alltime'])
+    if (!alltime) {
+        alltime = {}
+        await chrome.storage.sync.set({ alltime })
+        console.log('initialize empty alltime')
+    }
     let { options } = await chrome.storage.sync.get(['options'])
     options = options || {}
     let changed = false
@@ -195,11 +201,29 @@ async function setExtensions() {
     const extensions = await getExtensions()
     console.debug('setExtensions: extensions:', extensions)
     // let { installed } = await chrome.storage.local.get(['installed'])
+    const { alltime } = await chrome.storage.sync.get(['alltime'])
+    // console.log('alltime', alltime)
+    let changed = false
     const installed = {}
     for (const info of extensions) {
+        // console.log('info:', info)
         installed[info.id] = true
+        if (!(info.id in alltime)) {
+            // console.debug('add alltime:', info)
+            changed = true
+            alltime[info.id] = {
+                name: info.name,
+                version: info.version,
+                description: info.description,
+                homepageUrl: info.homepageUrl,
+                date: Date.now(),
+            }
+        }
     }
     await chrome.storage.local.set({ installed })
+    if (changed) {
+        await chrome.storage.sync.set({ alltime })
+    }
 }
 
 /**
@@ -269,12 +293,22 @@ async function addHistory(action, info) {
     if (info.type !== 'extension' || info.id.endsWith('@search.mozilla.org')) {
         return console.debug('skipping non-extension', info)
     }
-    console.log('addHistory:', action, info)
+    console.log(`addHistory: ${action}:`, info)
     let { history } = await chrome.storage.local.get(['history'])
     info.action = action
     info.date = Date.now()
-    // console.log('info:', info)
     history.push(info)
-    console.debug('history:', history)
+    // console.debug('history:', history)
     await chrome.storage.local.set({ history })
+
+    // console.debug('update alltime:', info)
+    const { alltime } = await chrome.storage.sync.get(['alltime'])
+    alltime[info.id] = {
+        name: info.name,
+        version: info.version,
+        description: info.description,
+        homepageUrl: info.homepageUrl,
+        date: Date.now(),
+    }
+    await chrome.storage.sync.set({ alltime })
 }
