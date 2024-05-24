@@ -23,6 +23,8 @@ const dtOptions = {
     //         { name: 'permissions', width: 1000 },
     //     ],
     // },
+    // fixedColumns: true,
+    autoWidth: false,
     order: [[2, 'asc']],
     pageLength: -1,
     lengthMenu: [
@@ -36,6 +38,56 @@ const dtOptions = {
         searchPlaceholder: 'Type to Filter...',
         zeroRecords: 'No Results',
     },
+    columns: [
+        // {
+        //     className: 'dt-control',
+        //     orderable: false,
+        //     data: null,
+        //     defaultContent: '',
+        //     name: 'dt-control',
+        // },
+        { data: 'enabled', name: 'enabled', width: '48px' },
+        { data: 'manifest', name: 'manifest' },
+        { data: 'name', name: 'name' },
+        { data: 'hostPermissions', name: 'hostPermissions' },
+        { data: 'permissions', name: 'permissions' },
+    ],
+    columnDefs: [
+        {
+            targets: 0,
+            responsivePriority: 2,
+            render: renderSwitch,
+            orderable: false,
+        },
+        {
+            targets: 1,
+            responsivePriority: 3,
+            render: renderButtons,
+            orderable: false,
+        },
+        {
+            targets: 2,
+            responsivePriority: 1,
+            render: renderName,
+            orderable: true,
+        },
+        {
+            targets: 3,
+            responsivePriority: 4,
+            render: renderHosts,
+            orderable: false,
+        },
+        {
+            targets: 4,
+            responsivePriority: 5,
+            render: renderPerms,
+            orderable: false,
+        },
+        {
+            targets: '_all',
+            visible: true,
+        },
+    ],
     layout: {
         top2Start: {
             buttons: {
@@ -103,49 +155,6 @@ const dtOptions = {
         // },
         topEnd: 'search',
     },
-    columns: [
-        { data: 'enabled' },
-        { data: 'manifest' },
-        { data: 'name' },
-        { data: 'hostPermissions' },
-        { data: 'permissions' },
-    ],
-    columnDefs: [
-        {
-            targets: 0,
-            responsivePriority: 2,
-            render: renderSwitch,
-            orderable: false,
-        },
-        {
-            targets: 1,
-            responsivePriority: 3,
-            render: renderButtons,
-            orderable: false,
-        },
-        {
-            targets: 2,
-            responsivePriority: 1,
-            render: renderName,
-            orderable: true,
-        },
-        {
-            targets: 3,
-            responsivePriority: 4,
-            render: renderHosts,
-            orderable: false,
-        },
-        {
-            targets: 4,
-            responsivePriority: 5,
-            render: renderPerms,
-            orderable: false,
-        },
-        {
-            targets: '_all',
-            visible: true,
-        },
-    ],
 }
 
 let table
@@ -167,6 +176,7 @@ async function domContentLoaded() {
     table = new DataTable('#extensions-table', dtOptions)
     table.rows.add(extensions).draw()
     window.dispatchEvent(new Event('resize'))
+    table.on('click', tableOnClick)
 
     // if (chrome.runtime.lastError) {
     //     showToast(chrome.runtime.lastError.message, 'warning')
@@ -180,6 +190,27 @@ async function updateExtensions(info) {
     table.clear()
     table.rows.add(extensions).draw()
     window.dispatchEvent(new Event('resize'))
+}
+
+// Formatting function for row details - modify as you need
+function format(d) {
+    // console.log('d:', d)
+    const desc = d.description || 'No Description.'
+    return `<strong>Description:</strong> ${desc}`
+}
+
+// Add event listener for opening and closing details
+function tableOnClick(e) {
+    let tr = e.target.closest('tr')
+    let row = table.row(tr)
+
+    if (row.child.isShown()) {
+        // This row is already open - close it
+        row.child.hide()
+    } else {
+        // Open this row
+        row.child(format(row.data())).show()
+    }
 }
 
 function renderSwitch(data, type, row, meta) {
@@ -268,6 +299,8 @@ function renderButtons(data, type, row, meta) {
     div.appendChild(btn)
     if (row.optionsUrl) {
         const btn = getButton('Options', row.optionsUrl, 'outline-primary')
+        btn.classList.remove('my-0')
+        btn.classList.add('mb-0')
         if (!row.enabled) btn.classList.add('disabled')
         div.appendChild(btn)
     }
