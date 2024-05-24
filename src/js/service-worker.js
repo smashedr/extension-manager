@@ -230,7 +230,7 @@ async function setExtensions() {
             alltime[info.id] = {
                 name: info.name,
                 version: info.version,
-                description: info.description,
+                // description: info.description,
                 homepageUrl: info.homepageUrl,
                 date: Date.now(),
             }
@@ -366,7 +366,7 @@ async function addHistory(action, info) {
     alltime[info.id] = {
         name: info.name,
         version: info.version,
-        description: info.description,
+        // description: info.description,
         homepageUrl: info.homepageUrl,
         date: Date.now(),
     }

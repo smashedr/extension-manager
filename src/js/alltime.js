@@ -94,7 +94,7 @@ const dtOptions = {
         { data: 'name' },
         { data: 'version' },
         { data: 'id' },
-        { data: 'description' },
+        // { data: 'description' },
         { data: 'date' },
     ],
     columnDefs: [
@@ -107,11 +107,11 @@ const dtOptions = {
         {
             targets: 2,
         },
+        // {
+        //     targets: 3,
+        // },
         {
             targets: 3,
-        },
-        {
-            targets: 4,
             render: DataTable.render.datetime('kk:mm MMM DD, YYYY'),
         },
         {
