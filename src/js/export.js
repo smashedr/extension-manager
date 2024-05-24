@@ -10,6 +10,21 @@ export async function saveOptions(event) {
     const { options } = await chrome.storage.sync.get(['options'])
     let key = event.target.id
     let value
+    if (key.startsWith('perm-')) {
+        const perm = key.split('-')[1]
+        console.log('options.disablePerms:', options.disablePerms)
+        console.log('perm:', perm)
+        console.log('checked:', event.target.checked)
+        if (event.target.checked) {
+            options.disablePerms.push(perm)
+        } else {
+            const index = options.disablePerms.indexOf(perm)
+            options.disablePerms.splice(index, 1)
+        }
+        console.log('options.disablePerms:', options.disablePerms)
+        await chrome.storage.sync.set({ options })
+        return
+    }
     if (event.target.type === 'radio') {
         key = event.target.name
         const radios = document.getElementsByName(key)
@@ -45,6 +60,17 @@ export function updateOptions(options) {
     for (let [key, value] of Object.entries(options)) {
         if (typeof value === 'undefined') {
             console.warn('Value undefined for key:', key)
+            continue
+        }
+        if (key === 'disablePerms') {
+            console.log('disablePerms:', value)
+            for (const perm of value) {
+                const el = document.getElementById(`perm-${perm}`)
+                if (!el) {
+                    continue
+                }
+                el.checked = true
+            }
             continue
         }
         if (key.startsWith('radio')) {

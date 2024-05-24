@@ -339,7 +339,26 @@ function renderHosts(data, type, row, meta) {
 }
 
 function renderPerms(data, type, row, meta) {
-    return data?.join(', ') || ''
+    if (!data?.length) {
+        return ''
+    }
+    const div = document.createElement('div')
+    for (const perm of data) {
+        if (extOptions.disablePerms.includes(perm)) {
+            const span = document.createElement('span')
+            span.classList.add('text-danger')
+            span.textContent = perm
+            div.appendChild(span)
+        } else {
+            const text = document.createTextNode(perm)
+            div.appendChild(text)
+        }
+        div.appendChild(document.createTextNode(', '))
+    }
+    if (div.children.length) {
+        div.removeChild(div.lastChild)
+    }
+    return div
 }
 
 function getButton(text, href, style) {

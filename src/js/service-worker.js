@@ -42,6 +42,8 @@ async function onInstalled(details) {
     const options = await Promise.resolve(
         setDefaultOptions({
             hostsDisplay: 4,
+            autoDisable: true,
+            disablePerms: ['downloads.open'],
             contextMenu: true,
             showUpdate: false,
         })
@@ -146,7 +148,7 @@ async function notificationsClicked(notificationId) {
     chrome.notifications.clear(notificationId)
     const url = chrome.runtime.getURL('/html/home.html')
     console.debug('url:', url)
-    await chrome.tabs.create({ active: true, url })
+    activateOrOpen(url)
 }
 
 /**
@@ -314,18 +316,27 @@ async function processExtensionChange(info) {
     const ext = await chrome.management.get(info.id)
     console.debug('ext:', ext)
     console.debug('ext.permissions:', ext.permissions)
-    if (ext.permissions.includes('downloads.open')) {
-        console.log('setEnabled:', ext.id)
-        let msg
-        try {
-            await chrome.management.setEnabled(ext.id, false)
-            msg = `${ext.name} disabled due to permission: download.open`
-        } catch (e) {
-            console.debug(e)
-            msg = `${ext.name} should be disabled due to permission: download.open`
+    const { options } = await chrome.storage.sync.get(['options'])
+    if (options.disablePerms) {
+        const perms = []
+        for (const perm of ext.permissions) {
+            if (options.disablePerms.includes(perm)) {
+                perms.push(perm)
+            }
         }
-        console.log('msg:', msg)
-        await sendNotification('Disabled Extension', msg)
+        if (perms.length) {
+            console.log('Disable:', ext.id, perms)
+            let msg
+            try {
+                await chrome.management.setEnabled(ext.id, false)
+                msg = `${ext.name} disabled due to permission: ${perms.join(', ')}`
+            } catch (e) {
+                console.debug(e)
+                msg = `${ext.name} should be disabled due to permission: ${perms.join(', ')}`
+            }
+            console.log('msg:', msg)
+            await sendNotification('Disabled Extension', msg)
+        }
     }
 }
 
