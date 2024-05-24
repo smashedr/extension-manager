@@ -7,6 +7,7 @@ chrome.runtime.onInstalled.addListener(onInstalled)
 chrome.contextMenus.onClicked.addListener(onClicked)
 chrome.commands.onCommand.addListener(onCommand)
 chrome.storage.onChanged.addListener(onChanged)
+chrome.notifications.onClicked.addListener(notificationsClicked)
 
 chrome.management.onInstalled.addListener(extInstalled)
 chrome.management.onUninstalled.addListener(extUninstalled)
@@ -136,6 +137,19 @@ function onChanged(changes, namespace) {
 }
 
 /**
+ * Notifications On Clicked Callback
+ * @function notificationsClicked
+ * @param {String} notificationId
+ */
+async function notificationsClicked(notificationId) {
+    console.debug('notifications.onClicked:', notificationId)
+    chrome.notifications.clear(notificationId)
+    const url = chrome.runtime.getURL('/html/home.html')
+    console.debug('url:', url)
+    await chrome.tabs.create({ active: true, url })
+}
+
+/**
  * Create Context Menus
  * @function createContextMenus
  */
@@ -233,15 +247,18 @@ async function setExtensions() {
  */
 async function extInstalled(info) {
     console.debug('extInstalled:', info)
+    const ext = await chrome.management.get(info.id)
+    console.debug('ext:', ext)
     let { installed } = await chrome.storage.local.get(['installed'])
     console.debug('installed:', installed)
-    if (info.id in installed) {
-        await addHistory('update', info)
+    if (ext.id in installed) {
+        await addHistory('update', ext)
     } else {
-        await addHistory('install', info)
-        installed[info.id] = true
+        await addHistory('install', ext)
+        installed[ext.id] = true
         await chrome.storage.local.set({ installed })
     }
+    await processExtensionChange(ext)
 }
 
 /**
@@ -251,13 +268,15 @@ async function extInstalled(info) {
  */
 async function extUninstalled(info) {
     console.debug('extUninstalled:', info)
+    const ext = await chrome.management.get(info.id)
+    console.debug('ext:', ext)
     let { installed } = await chrome.storage.local.get(['installed'])
-    if (info.id in installed) {
-        if (delete installed[info.id]) {
+    if (ext.id in installed) {
+        if (delete installed[ext.id]) {
             await chrome.storage.local.set({ installed })
         }
     }
-    await addHistory('uninstall', info)
+    await addHistory('uninstall', ext)
 }
 
 /**
@@ -267,7 +286,10 @@ async function extUninstalled(info) {
  */
 async function extEnabled(info) {
     console.debug('extEnabled:', info)
-    await addHistory('enable', info)
+    const ext = await chrome.management.get(info.id)
+    console.debug('ext:', ext)
+    await addHistory('enable', ext)
+    await processExtensionChange(ext)
 }
 
 /**
@@ -277,7 +299,34 @@ async function extEnabled(info) {
  */
 async function extDisabled(info) {
     console.debug('extDisabled:', info)
-    await addHistory('disable', info)
+    const ext = await chrome.management.get(info.id)
+    console.debug('ext:', ext)
+    await addHistory('disable', ext)
+}
+
+/**
+ * Extension Disabled Callback
+ * @function processExtensionChange
+ * @param {ExtensionInfo} info
+ */
+async function processExtensionChange(info) {
+    console.debug('processExtensionChange:', info)
+    const ext = await chrome.management.get(info.id)
+    console.debug('ext:', ext)
+    console.debug('ext.permissions:', ext.permissions)
+    if (ext.permissions.includes('downloads.open')) {
+        console.log('setEnabled:', ext.id)
+        let msg
+        try {
+            await chrome.management.setEnabled(ext.id, false)
+            msg = `${ext.name} disabled due to permission: download.open`
+        } catch (e) {
+            console.debug(e)
+            msg = `${ext.name} should be disabled due to permission: download.open`
+        }
+        console.log('msg:', msg)
+        await sendNotification('Disabled Extension', msg)
+    }
 }
 
 /**
@@ -311,4 +360,27 @@ async function addHistory(action, info) {
         date: Date.now(),
     }
     await chrome.storage.sync.set({ alltime })
+}
+
+/**
+ * Send Notification
+ * @function sendNotification
+ * @param {String} title
+ * @param {String} text
+ * @param {String} id - Optional
+ * @param {Number} timeout - Optional
+ */
+async function sendNotification(title, text, id = '', timeout = 10) {
+    console.debug('sendNotification', title, text, id, timeout)
+    const options = {
+        type: 'basic',
+        iconUrl: chrome.runtime.getURL('media/logo96.png'),
+        title: title,
+        message: text,
+    }
+    chrome.notifications.create(id, options, function (notification) {
+        setTimeout(function () {
+            chrome.notifications.clear(notification)
+        }, timeout * 1000)
+    })
 }

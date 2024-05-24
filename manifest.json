@@ -5,7 +5,7 @@
   "author": "Shane",
   "version": "0.0.1",
   "manifest_version": 3,
-  "permissions": ["contextMenus", "management", "storage"],
+  "permissions": ["contextMenus", "management", "notifications", "storage"],
   "background": { "type": "module" },
   "options_ui": {
     "page": "html/options.html",
