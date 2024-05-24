@@ -374,7 +374,7 @@ async function sendNotification(title, text, id = '', timeout = 10) {
     console.debug('sendNotification', title, text, id, timeout)
     const options = {
         type: 'basic',
-        iconUrl: chrome.runtime.getURL('media/logo96.png'),
+        iconUrl: chrome.runtime.getURL('/images/logo96.png'),
         title: title,
         message: text,
     }
