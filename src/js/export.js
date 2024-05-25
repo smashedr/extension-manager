@@ -113,6 +113,10 @@ export async function linkClick(event, close = false) {
     const anchor = event.target.closest('a')
     const href = anchor.getAttribute('href').replace(/^\.+/g, '')
     console.debug('href:', href)
+    if (href === '#') {
+        if (close) window.close()
+        return
+    }
     let url
     if (href.endsWith('html/options.html')) {
         chrome.runtime.openOptionsPage()
@@ -333,7 +337,8 @@ export async function processExtensionChange(info) {
     }
 }
 
-export async function processPerms() {
+export async function processPerms(event) {
+    event?.preventDefault()
     const extensions = await getExtensions()
     console.debug('processPerms:', extensions)
     for (const info of extensions) {
