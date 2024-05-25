@@ -194,13 +194,17 @@ export function showToast(message, type = 'success') {
  * @param {String} id - Optional
  * @param {Number} timeout - Optional
  */
-export async function sendNotification(title, text, id = '', timeout = 15) {
+export async function sendNotification(title, text, id = '', timeout = 30) {
     console.debug('sendNotification', title, text, id, timeout)
     const options = {
         type: 'basic',
         iconUrl: chrome.runtime.getURL('/images/logo96.png'),
         title: title,
         message: text,
+    }
+    if (id) {
+        const rand = Math.random().toString().substring(2, 7)
+        id = `${id}-${rand}`
     }
     chrome.notifications.create(id, options, function (notification) {
         setTimeout(function () {
@@ -332,16 +336,37 @@ export async function processExtensionChange(info) {
                 msg = `${ext.name} should be disabled due to permission: ${perms.join(', ')}`
             }
             // console.debug('msg:', msg)
-            await sendNotification('Disabled Extension', msg)
+            await sendNotification('Disabled Extension', msg, 'home')
         }
     }
 }
 
+/**
+ * TODO: Split This into an Event Listener and Function
+ * @function processPerms
+ * @param {MouseEvent} [event]
+ */
 export async function processPerms(event) {
+    console.debug('processPerms:', event)
     event?.preventDefault()
+    const { options } = await chrome.storage.sync.get(['options'])
+    if (!options.autoDisable || !options.disablePerms?.length) {
+        if (event) {
+            console.debug('send notification for event')
+            await sendNotification(
+                'Disabled Perms Not Configured',
+                'You have not configured any disable permissions in Options.',
+                'options'
+            )
+        }
+        window.close()
+        return console.debug('autoDisable disabled or no disablePerms')
+    }
+    console.debug('proceed')
     const extensions = await getExtensions()
-    console.debug('processPerms:', extensions)
+    // console.debug('processPerms:', extensions)
     for (const info of extensions) {
         await processExtensionChange(info)
     }
+    if (event) window.close()
 }

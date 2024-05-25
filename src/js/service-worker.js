@@ -48,8 +48,8 @@ async function onInstalled(details) {
     const options = await Promise.resolve(
         setDefaultOptions({
             hostsDisplay: 4,
-            autoDisable: true,
-            disablePerms: ['downloads.open'],
+            autoDisable: false,
+            disablePerms: [],
             contextMenu: true,
             showUpdate: false,
         })
@@ -152,9 +152,13 @@ function onChanged(changes, namespace) {
 async function notificationsClicked(notificationId) {
     console.debug('notifications.onClicked:', notificationId)
     chrome.notifications.clear(notificationId)
-    const url = chrome.runtime.getURL('/html/home.html')
-    console.debug('url:', url)
-    activateOrOpen(url)
+    if (notificationId.startsWith('options')) {
+        chrome.runtime.openOptionsPage()
+    } else if (notificationId.startsWith('home')) {
+        const url = chrome.runtime.getURL('/html/home.html')
+        console.debug('url:', url)
+        activateOrOpen(url)
+    }
 }
 
 /**
@@ -225,7 +229,7 @@ async function setExtensions() {
     // let { installed } = await chrome.storage.local.get(['installed'])
     // const { alltime } = await chrome.storage.sync.get(['alltime'])
     // console.log('alltime', alltime)
-    let changed = false
+    // let changed = false
     const installed = {}
     for (const info of extensions) {
         // console.log('info:', info)
