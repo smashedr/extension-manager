@@ -1,10 +1,14 @@
 // JS for options.html
 
-import { saveOptions, showToast, updateOptions } from './export.js'
+import { linkClick, saveOptions, showToast, updateOptions } from './export.js'
 
 chrome.storage.onChanged.addListener(onChanged)
 
 document.addEventListener('DOMContentLoaded', initOptions)
+
+document
+    .querySelectorAll('a[href]')
+    .forEach((el) => el.addEventListener('click', linkClick))
 document
     .querySelectorAll('#options-form input')
     .forEach((el) => el.addEventListener('change', saveOptions))

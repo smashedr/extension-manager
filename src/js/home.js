@@ -201,6 +201,10 @@ function format(d) {
 
 // Add event listener for opening and closing details
 function tableOnClick(e) {
+    console.log('event:', e.target)
+    if (e.target.nodeName !== 'TD') {
+        return console.log('click not on td')
+    }
     let tr = e.target.closest('tr')
     let row = table.row(tr)
 
