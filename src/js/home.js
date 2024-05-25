@@ -215,19 +215,32 @@ async function updateExtensions(info) {
     window.dispatchEvent(new Event('resize'))
 }
 
-// Formatting function for row details - modify as you need
-function format(d) {
-    // console.log('d:', d)
-    const desc = d.description || 'No Description.'
-    return `<strong>Description:</strong> ${desc}`
+function formatExpand(d) {
+    // console.log('formatExpand:', d)
+    const div = document.createElement('div')
+    if (d.description) {
+        const span = document.createElement('span')
+        span.innerHTML = `<strong>Description:</strong> ${d.description}`
+        div.appendChild(span)
+        div.appendChild(document.createElement('br'))
+    }
+    if (d.hostPermissions?.length) {
+        const span = document.createElement('span')
+        span.textContent = d.hostPermissions.join(', ')
+        span.classList.add('small')
+        div.appendChild(span)
+        // for (const perm of d.hostPermissions) {
+        // }
+    }
+    return div
+    // return `<strong>Description:</strong> ${desc}`
 }
 
-// Add event listener for opening and closing details
 function tableOnClick(e) {
     console.log('event:', e.target)
-    if (e.target.nodeName !== 'TD') {
-        return console.log('click not on td')
-    }
+    // if (e.target.nodeName !== 'TD') {
+    //     return console.log('click not on td')
+    // }
     let tr = e.target.closest('tr')
     let row = table.row(tr)
 
@@ -236,7 +249,7 @@ function tableOnClick(e) {
         row.child.hide()
     } else {
         // Open this row
-        row.child(format(row.data())).show()
+        row.child(formatExpand(row.data())).show()
     }
 }
 

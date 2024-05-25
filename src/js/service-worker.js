@@ -60,6 +60,8 @@ async function onInstalled(details) {
     }
     if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
         chrome.runtime.openOptionsPage()
+        const url = chrome.runtime.getURL('/html/home.html')
+        await chrome.tabs.create({ active: false, url })
     } else if (details.reason === chrome.runtime.OnInstalledReason.UPDATE) {
         if (options.showUpdate) {
             const manifest = chrome.runtime.getManifest()
