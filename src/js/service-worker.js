@@ -49,7 +49,7 @@ async function onInstalled(details) {
         setDefaultOptions({
             hostsDisplay: 4,
             autoDisable: false,
-            disablePerms: [],
+            disablePerms: ['downloads.open'],
             contextMenu: true,
             showUpdate: false,
         })
