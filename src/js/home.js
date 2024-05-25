@@ -38,6 +38,13 @@ const dtOptions = {
         searchPlaceholder: 'Type to Filter...',
         zeroRecords: 'No Results',
     },
+    // rowCallback: function (row, data) {
+    //     console.log('rowCallback:', row, data)
+    //     if (data.id in extWhitelist) {
+    //         // $(td).class('bg-success-subtle')
+    //         row.classList.add('bg-success-subtle')
+    //     }
+    // },
     columns: [
         // {
         //     className: 'dt-control',
@@ -86,6 +93,12 @@ const dtOptions = {
             targets: ['permissions'],
             render: renderPerms,
             orderable: false,
+            createdCell: function (td, cellData, rowData, row, col) {
+                console.log('createdCell:', rowData.id)
+                if (rowData.id in extWhitelist) {
+                    td.classList.add('bg-success-subtle')
+                }
+            },
         },
         {
             targets: '_all',
@@ -404,6 +417,9 @@ function renderPerms(data, type, row, meta) {
         return ''
     }
     const div = document.createElement('div')
+    // if (row.id in extWhitelist) {
+    //     div.classList.add('bg-success-subtle')
+    // }
     for (const perm of data) {
         if (extOptions.disablePerms.includes(perm)) {
             const span = document.createElement('span')
