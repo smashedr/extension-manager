@@ -119,7 +119,7 @@ const dtOptions = {
                         extend: 'colvis',
                         text: 'Column Visibility',
                         // className: 'btn-primary',
-                        columns: [0, 1, 3, 4],
+                        columns: [2, 3, 4],
                         postfixButtons: ['colvisRestore'],
                     },
                     {
