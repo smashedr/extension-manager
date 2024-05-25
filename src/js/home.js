@@ -38,13 +38,14 @@ const dtOptions = {
         searchPlaceholder: 'Type to Filter...',
         zeroRecords: 'No Results',
     },
-    // rowCallback: function (row, data) {
-    //     console.log('rowCallback:', row, data)
-    //     if (data.id in extWhitelist) {
-    //         // $(td).class('bg-success-subtle')
-    //         row.classList.add('bg-success-subtle')
-    //     }
-    // },
+    rowCallback: function (row, data) {
+        // console.log('rowCallback:', row, data)
+        row.dataset.id = data.id
+        // if (data.id in extWhitelist) {
+        //     // $(td).class('bg-success-subtle')
+        //     row.classList.add('bg-success-subtle')
+        // }
+    },
     columns: [
         {
             className: 'dt-control',
@@ -176,7 +177,7 @@ const dtOptions = {
 
 let table
 let extOptions
-// let extWhitelist
+let extWhitelist
 
 /**
  * DOMContentLoaded
@@ -189,9 +190,9 @@ async function domContentLoaded() {
     extOptions = options
     console.debug('extOptions:', extOptions)
 
-    // const { whitelist } = await chrome.storage.sync.get(['whitelist'])
-    // extWhitelist = whitelist
-    // console.debug('extWhitelist:', extWhitelist)
+    const { whitelist } = await chrome.storage.sync.get(['whitelist'])
+    extWhitelist = whitelist
+    console.debug('extWhitelist:', extWhitelist)
 
     const extensions = await getExtensions()
     console.debug('extensions:', extensions)
@@ -421,15 +422,16 @@ function renderPerms(data, type, row, meta) {
     //     div.classList.add('bg-success-subtle')
     // }
     for (const perm of data) {
-        if (extOptions.disablePerms.includes(perm)) {
-            const span = document.createElement('span')
+        const span = document.createElement('span')
+        span.textContent = perm
+        if (extWhitelist[row.id]?.includes(perm)) {
+            span.classList.add('text-success')
+        } else if (extOptions.disablePerms.includes(perm)) {
             span.classList.add('text-danger')
-            span.textContent = perm
-            div.appendChild(span)
-        } else {
-            const text = document.createTextNode(perm)
-            div.appendChild(text)
         }
+        span.setAttribute('role', 'button')
+        span.addEventListener('click', whitelistPermission)
+        div.appendChild(span)
         div.appendChild(document.createTextNode(', '))
     }
     if (div.children.length) {
@@ -462,6 +464,43 @@ async function toggleExtension(event) {
         const id = event.target.dataset.id
         let info = await chrome.management.get(id)
         await chrome.management.setEnabled(id, !info.enabled)
+    } catch (e) {
+        showToast(e.toString(), 'danger')
+    }
+}
+
+async function whitelistPermission(event) {
+    console.debug('whitelistPermission:', event)
+    const perm = event.target.textContent
+    console.debug('perm:', perm)
+    event.preventDefault()
+    const tr = event.target.closest('tr')
+    const id = tr.dataset.id
+    console.debug('id:', id)
+
+    try {
+        let { whitelist } = await chrome.storage.sync.get(['whitelist'])
+        // console.debug('whitelist:', whitelist)
+        if (!whitelist[id]) {
+            whitelist[id] = []
+        }
+        if (whitelist[id].includes(perm)) {
+            console.debug('remove perm:', perm)
+            const index = whitelist[id].indexOf(perm)
+            whitelist[id].splice(index, 1)
+            event.target.classList.remove('text-success')
+            if (extOptions.disablePerms.includes(perm)) {
+                event.target.classList.add('text-danger')
+            }
+        } else {
+            console.debug('add perm:', perm)
+            whitelist[id].push(perm)
+            // event.target.classList.add('text-success')
+            event.target.className = 'text-success'
+        }
+        console.debug('whitelist:', whitelist)
+        extWhitelist = whitelist
+        await chrome.storage.sync.set({ whitelist })
     } catch (e) {
         showToast(e.toString(), 'danger')
     }

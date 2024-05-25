@@ -207,12 +207,12 @@ async function setDefaultOptions(defaultOptions) {
     //     console.log('initialize empty alltime')
     // }
 
-    // let { whitelist } = await chrome.storage.sync.get(['whitelist'])
-    // if (!whitelist) {
-    //     whitelist = {}
-    //     await chrome.storage.sync.set({ whitelist })
-    //     console.log('initialize empty whitelist')
-    // }
+    let { whitelist } = await chrome.storage.sync.get(['whitelist'])
+    if (!whitelist) {
+        whitelist = {}
+        await chrome.storage.sync.set({ whitelist })
+        console.log('initialize empty whitelist')
+    }
 
     let { options } = await chrome.storage.sync.get(['options'])
     options = options || {}

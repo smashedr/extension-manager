@@ -317,7 +317,7 @@ export async function processExtensionChange(info) {
         // console.debug('disabled or no permissions')
         return
     }
-    // const { whitelist } = await chrome.storage.sync.get(['whitelist'])
+    const { whitelist } = await chrome.storage.sync.get(['whitelist'])
     // if (info.id in whitelist) {
     //     console.debug('extension in whitelist:', info.id)
     //     return
@@ -327,7 +327,8 @@ export async function processExtensionChange(info) {
         const perms = []
         for (const perm of ext.permissions) {
             if (options.disablePerms.includes(perm)) {
-                perms.push(perm)
+                if (whitelist[info.id] && !whitelist[info.id]?.includes(perm))
+                    perms.push(perm)
             }
         }
         if (perms.length) {
