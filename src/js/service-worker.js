@@ -1,6 +1,10 @@
 // JS Background Service Worker
 
-import { activateOrOpen, getExtensions } from './export.js'
+import {
+    activateOrOpen,
+    getExtensions,
+    processExtensionChange,
+} from './export.js'
 
 chrome.runtime.onStartup.addListener(onStartup)
 chrome.runtime.onInstalled.addListener(onInstalled)
@@ -20,7 +24,6 @@ chrome.management.onDisabled.addListener(extDisabled)
  */
 async function onStartup() {
     console.log('onStartup')
-    await setExtensions()
     if (typeof browser !== 'undefined') {
         console.log('Firefox CTX Menu Workaround')
         const { options } = await chrome.storage.sync.get(['options'])
@@ -29,6 +32,8 @@ async function onStartup() {
             createContextMenus()
         }
     }
+    await setExtensions()
+    await processPerms()
 }
 
 /**
@@ -161,7 +166,7 @@ function createContextMenus() {
     const contexts = [
         [['all'], 'openHome', 'normal', 'Extension Manager'],
         [['all'], 'openHistory', 'normal', 'Extension History'],
-        [['all'], 'showPanel', 'normal', 'Show Panel'],
+        // [['all'], 'showPanel', 'normal', 'Show Panel'],
         [['all'], 's-1', 'separator', ''],
         [['all'], 'openOptions', 'normal', 'Open Options'],
     ]
@@ -308,40 +313,6 @@ async function extDisabled(info) {
 
 /**
  * Extension Disabled Callback
- * @function processExtensionChange
- * @param {ExtensionInfo} info
- */
-async function processExtensionChange(info) {
-    console.debug('processExtensionChange:', info)
-    const ext = await chrome.management.get(info.id)
-    console.debug('ext:', ext)
-    console.debug('ext.permissions:', ext.permissions)
-    const { options } = await chrome.storage.sync.get(['options'])
-    if (options.disablePerms) {
-        const perms = []
-        for (const perm of ext.permissions) {
-            if (options.disablePerms.includes(perm)) {
-                perms.push(perm)
-            }
-        }
-        if (perms.length) {
-            console.log('Disable:', ext.id, perms)
-            let msg
-            try {
-                await chrome.management.setEnabled(ext.id, false)
-                msg = `${ext.name} disabled due to permission: ${perms.join(', ')}`
-            } catch (e) {
-                console.debug(e)
-                msg = `${ext.name} should be disabled due to permission: ${perms.join(', ')}`
-            }
-            console.log('msg:', msg)
-            await sendNotification('Disabled Extension', msg)
-        }
-    }
-}
-
-/**
- * Extension Disabled Callback
  * @function extDisabled
  * @param {String} action
  * @param {ExtensionInfo} info
@@ -371,27 +342,4 @@ async function addHistory(action, info) {
     //     date: Date.now(),
     // }
     // await chrome.storage.sync.set({ alltime })
-}
-
-/**
- * Send Notification
- * @function sendNotification
- * @param {String} title
- * @param {String} text
- * @param {String} id - Optional
- * @param {Number} timeout - Optional
- */
-async function sendNotification(title, text, id = '', timeout = 10) {
-    console.debug('sendNotification', title, text, id, timeout)
-    const options = {
-        type: 'basic',
-        iconUrl: chrome.runtime.getURL('/images/logo96.png'),
-        title: title,
-        message: text,
-    }
-    chrome.notifications.create(id, options, function (notification) {
-        setTimeout(function () {
-            chrome.notifications.clear(notification)
-        }, timeout * 1000)
-    })
 }

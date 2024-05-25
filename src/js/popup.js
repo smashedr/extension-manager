@@ -3,6 +3,7 @@
 import {
     activateOrOpen,
     linkClick,
+    processPerms,
     saveOptions,
     showToast,
     updateOptions,
@@ -15,6 +16,9 @@ document
     .forEach((el) =>
         el.addEventListener('click', (event) => linkClick(event, true))
     )
+document
+    .querySelectorAll('.process-perms')
+    .forEach((el) => el.addEventListener('click', processPerms))
 document
     .querySelectorAll('#options-form input')
     .forEach((el) => el.addEventListener('change', saveOptions))

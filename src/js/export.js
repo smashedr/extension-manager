@@ -189,6 +189,29 @@ export function showToast(message, type = 'success') {
 }
 
 /**
+ * Send Notification
+ * @function sendNotification
+ * @param {String} title
+ * @param {String} text
+ * @param {String} id - Optional
+ * @param {Number} timeout - Optional
+ */
+export async function sendNotification(title, text, id = '', timeout = 15) {
+    console.debug('sendNotification', title, text, id, timeout)
+    const options = {
+        type: 'basic',
+        iconUrl: chrome.runtime.getURL('/images/logo96.png'),
+        title: title,
+        message: text,
+    }
+    chrome.notifications.create(id, options, function (notification) {
+        setTimeout(function () {
+            chrome.notifications.clear(notification)
+        }, timeout * 1000)
+    })
+}
+
+/**
  * Update History Table
  * @function getExtensions
  * @return  {Array}
@@ -277,5 +300,51 @@ export function appendClipSpan(
     parent.appendChild(span)
     if (br) {
         parent.appendChild(document.createElement('br'))
+    }
+}
+
+/**
+ * Extension Disabled Callback
+ * @function processExtensionChange
+ * @param {ExtensionInfo} info
+ */
+export async function processExtensionChange(info) {
+    console.debug('processExtensionChange:', info)
+    const ext = await chrome.management.get(info.id)
+    console.debug('ext:', ext)
+    console.debug('ext.permissions:', ext.permissions)
+    if (!ext.enabled || !ext.permissions) {
+        return console.debug('disabled or no permissions')
+    }
+    const { options } = await chrome.storage.sync.get(['options'])
+    if (options.disablePerms) {
+        const perms = []
+        for (const perm of ext.permissions) {
+            if (options.disablePerms.includes(perm)) {
+                perms.push(perm)
+            }
+        }
+        if (perms.length) {
+            console.log('Disable:', ext.id, perms)
+            let msg
+            try {
+                await chrome.management.setEnabled(ext.id, false)
+                msg = `${ext.name} disabled due to permission: ${perms.join(', ')}`
+            } catch (e) {
+                console.debug(e)
+                msg = `${ext.name} should be disabled due to permission: ${perms.join(', ')}`
+            }
+            console.log('msg:', msg)
+            await sendNotification('Disabled Extension', msg)
+        }
+    }
+}
+
+export async function processPerms() {
+    console.debug('getExtensions')
+    const extensions = await getExtensions()
+    console.debug('extensions:', extensions)
+    for (const info of extensions) {
+        await processExtensionChange(info)
     }
 }
