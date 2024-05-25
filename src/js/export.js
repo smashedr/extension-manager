@@ -12,16 +12,12 @@ export async function saveOptions(event) {
     let value
     if (key.startsWith('perm-')) {
         const perm = key.split('-')[1]
-        console.log('options.disablePerms:', options.disablePerms)
-        console.log('perm:', perm)
-        console.log('checked:', event.target.checked)
         if (event.target.checked) {
             options.disablePerms.push(perm)
         } else {
             const index = options.disablePerms.indexOf(perm)
             options.disablePerms.splice(index, 1)
         }
-        console.log('options.disablePerms:', options.disablePerms)
         await chrome.storage.sync.set({ options })
         return
     }
@@ -63,7 +59,6 @@ export function updateOptions(options) {
             continue
         }
         if (key === 'disablePerms') {
-            console.log('disablePerms:', value)
             for (const perm of value) {
                 const el = document.getElementById(`perm-${perm}`)
                 if (!el) {
@@ -113,8 +108,7 @@ function hideShowElement(selector, show, speed = 'fast') {
  * @param {Boolean} close
  */
 export async function linkClick(event, close = false) {
-    console.debug('linkClick:', event)
-    console.debug('close:', close)
+    console.debug('linkClick:', event, close)
     event.preventDefault()
     const anchor = event.target.closest('a')
     const href = anchor.getAttribute('href').replace(/^\.+/g, '')
@@ -311,10 +305,9 @@ export function appendClipSpan(
 export async function processExtensionChange(info) {
     console.debug('processExtensionChange:', info)
     const ext = await chrome.management.get(info.id)
-    console.debug('ext:', ext)
-    console.debug('ext.permissions:', ext.permissions)
     if (!ext.enabled || !ext.permissions) {
-        return console.debug('disabled or no permissions')
+        // console.debug('disabled or no permissions')
+        return
     }
     const { options } = await chrome.storage.sync.get(['options'])
     if (options.disablePerms) {
@@ -325,7 +318,7 @@ export async function processExtensionChange(info) {
             }
         }
         if (perms.length) {
-            console.log('Disable:', ext.id, perms)
+            console.debug('Disable:', ext.id, perms)
             let msg
             try {
                 await chrome.management.setEnabled(ext.id, false)
@@ -334,16 +327,15 @@ export async function processExtensionChange(info) {
                 console.debug(e)
                 msg = `${ext.name} should be disabled due to permission: ${perms.join(', ')}`
             }
-            console.log('msg:', msg)
+            // console.debug('msg:', msg)
             await sendNotification('Disabled Extension', msg)
         }
     }
 }
 
 export async function processPerms() {
-    console.debug('getExtensions')
     const extensions = await getExtensions()
-    console.debug('extensions:', extensions)
+    console.debug('processPerms:', extensions)
     for (const info of extensions) {
         await processExtensionChange(info)
     }

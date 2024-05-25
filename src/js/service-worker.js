@@ -4,6 +4,7 @@ import {
     activateOrOpen,
     getExtensions,
     processExtensionChange,
+    processPerms,
 } from './export.js'
 
 chrome.runtime.onStartup.addListener(onStartup)

@@ -10,7 +10,6 @@ import {
 } from './export.js'
 
 document.addEventListener('DOMContentLoaded', initPopup)
-
 document
     .querySelectorAll('a[href]')
     .forEach((el) =>
