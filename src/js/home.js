@@ -46,16 +46,16 @@ const dtOptions = {
     //     }
     // },
     columns: [
-        // {
-        //     className: 'dt-control',
-        //     orderable: false,
-        //     data: null,
-        //     defaultContent: '',
-        //     name: 'dt-control',
-        // },
+        {
+            className: 'dt-control',
+            orderable: false,
+            data: null,
+            defaultContent: '',
+            name: 'dt-control',
+        },
         { data: 'enabled', name: 'enabled', width: '48px' },
         { data: 'manifest', name: 'manifest' },
-        { data: 'id', name: 'whitelist', width: '28px' },
+        // { data: 'id', name: 'whitelist', width: '28px' },
         { data: 'name', name: 'name' },
         { data: 'hostPermissions', name: 'hostPermissions' },
         { data: 'permissions', name: 'permissions' },
@@ -73,12 +73,12 @@ const dtOptions = {
             orderable: false,
             className: 'text-center',
         },
-        {
-            targets: ['whitelist'],
-            render: renderWhitelist,
-            orderable: false,
-            className: 'text-center',
-        },
+        // {
+        //     targets: ['whitelist'],
+        //     render: renderWhitelist,
+        //     orderable: false,
+        //     className: 'text-center',
+        // },
         {
             targets: ['name'],
             render: renderName,
@@ -93,12 +93,12 @@ const dtOptions = {
             targets: ['permissions'],
             render: renderPerms,
             orderable: false,
-            createdCell: function (td, cellData, rowData, row, col) {
-                console.log('createdCell:', rowData.id)
-                if (rowData.id in extWhitelist) {
-                    td.classList.add('bg-success-subtle')
-                }
-            },
+            // createdCell: function (td, cellData, rowData, row, col) {
+            //     console.log('createdCell:', rowData.id)
+            //     if (rowData.id in extWhitelist) {
+            //         td.classList.add('bg-success-subtle')
+            //     }
+            // },
         },
         {
             targets: '_all',
@@ -176,7 +176,7 @@ const dtOptions = {
 
 let table
 let extOptions
-let extWhitelist
+// let extWhitelist
 
 /**
  * DOMContentLoaded
@@ -189,16 +189,16 @@ async function domContentLoaded() {
     extOptions = options
     console.debug('extOptions:', extOptions)
 
-    const { whitelist } = await chrome.storage.sync.get(['whitelist'])
-    extWhitelist = whitelist
-    console.debug('extWhitelist:', extWhitelist)
+    // const { whitelist } = await chrome.storage.sync.get(['whitelist'])
+    // extWhitelist = whitelist
+    // console.debug('extWhitelist:', extWhitelist)
 
     const extensions = await getExtensions()
     console.debug('extensions:', extensions)
     table = new DataTable('#extensions-table', dtOptions)
     table.rows.add(extensions).draw()
     window.dispatchEvent(new Event('resize'))
-    table.on('click', tableOnClick)
+    table.on('click', 'td.dt-control', tableOnClick)
 
     // if (chrome.runtime.lastError) {
     //     showToast(chrome.runtime.lastError.message, 'warning')
@@ -333,20 +333,20 @@ function renderButtons(data, type, row, meta) {
     return div
 }
 
-function renderWhitelist(data, type, row, meta) {
-    const div = document.createElement('div')
-    const input = document.createElement('input')
-    div.appendChild(input)
-    input.classList.add('form-check-input')
-    input.type = 'checkbox'
-    input.ariaLabel = 'Whitelist'
-    input.dataset.id = row.id
-    input.addEventListener('change', whitelistExtension)
-    if (data in extWhitelist) {
-        input.checked = true
-    }
-    return div
-}
+// function renderWhitelist(data, type, row, meta) {
+//     const div = document.createElement('div')
+//     const input = document.createElement('input')
+//     div.appendChild(input)
+//     input.classList.add('form-check-input')
+//     input.type = 'checkbox'
+//     input.ariaLabel = 'Whitelist'
+//     input.dataset.id = row.id
+//     input.addEventListener('change', whitelistExtension)
+//     if (data in extWhitelist) {
+//         input.checked = true
+//     }
+//     return div
+// }
 
 function renderHosts(data, type, row, meta) {
     const div = document.createElement('div')
@@ -467,26 +467,26 @@ async function toggleExtension(event) {
     }
 }
 
-async function whitelistExtension(event) {
-    console.debug('whitelistExtension:', event)
-    event.preventDefault()
-    try {
-        let { whitelist } = await chrome.storage.sync.get(['whitelist'])
-        console.debug('whitelist:', whitelist)
-        const id = event.target.dataset.id
-        console.debug('id:', id)
-        let info = await chrome.management.get(id)
-        console.debug('info:', info)
-        console.debug('event.target.checked:', event.target.checked)
-        if (event.target.checked) {
-            whitelist[id] = true
-        } else if (id in whitelist) {
-            delete whitelist[id]
-        }
-        console.debug('whitelist:', whitelist)
-        extWhitelist = whitelist
-        await chrome.storage.sync.set({ whitelist })
-    } catch (e) {
-        showToast(e.toString(), 'danger')
-    }
-}
+// async function whitelistExtension(event) {
+//     console.debug('whitelistExtension:', event)
+//     event.preventDefault()
+//     try {
+//         let { whitelist } = await chrome.storage.sync.get(['whitelist'])
+//         console.debug('whitelist:', whitelist)
+//         const id = event.target.dataset.id
+//         console.debug('id:', id)
+//         let info = await chrome.management.get(id)
+//         console.debug('info:', info)
+//         console.debug('event.target.checked:', event.target.checked)
+//         if (event.target.checked) {
+//             whitelist[id] = true
+//         } else if (id in whitelist) {
+//             delete whitelist[id]
+//         }
+//         console.debug('whitelist:', whitelist)
+//         extWhitelist = whitelist
+//         await chrome.storage.sync.set({ whitelist })
+//     } catch (e) {
+//         showToast(e.toString(), 'danger')
+//     }
+// }

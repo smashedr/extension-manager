@@ -317,11 +317,11 @@ export async function processExtensionChange(info) {
         // console.debug('disabled or no permissions')
         return
     }
-    const { whitelist } = await chrome.storage.sync.get(['whitelist'])
-    if (info.id in whitelist) {
-        console.debug('extension in whitelist:', info.id)
-        return
-    }
+    // const { whitelist } = await chrome.storage.sync.get(['whitelist'])
+    // if (info.id in whitelist) {
+    //     console.debug('extension in whitelist:', info.id)
+    //     return
+    // }
     const { options } = await chrome.storage.sync.get(['options'])
     if (options.disablePerms) {
         const perms = []
