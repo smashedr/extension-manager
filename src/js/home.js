@@ -25,7 +25,7 @@ const dtOptions = {
     // },
     // fixedColumns: true,
     autoWidth: false,
-    order: [[2, 'asc']],
+    order: [[3, 'asc']],
     pageLength: -1,
     lengthMenu: [
         [-1, 10, 25, 50, 100, 250, 500, 1000],
@@ -48,38 +48,42 @@ const dtOptions = {
         // },
         { data: 'enabled', name: 'enabled', width: '48px' },
         { data: 'manifest', name: 'manifest' },
+        { data: 'id', name: 'whitelist', width: '28px' },
         { data: 'name', name: 'name' },
         { data: 'hostPermissions', name: 'hostPermissions' },
         { data: 'permissions', name: 'permissions' },
     ],
     columnDefs: [
         {
-            targets: 0,
-            responsivePriority: 2,
+            targets: ['enabled'],
             render: renderSwitch,
             orderable: false,
+            className: 'text-center',
         },
         {
-            targets: 1,
-            responsivePriority: 3,
+            targets: ['manifest'],
             render: renderButtons,
             orderable: false,
+            className: 'text-center',
         },
         {
-            targets: 2,
-            responsivePriority: 1,
+            targets: ['whitelist'],
+            render: renderWhitelist,
+            orderable: false,
+            className: 'text-center',
+        },
+        {
+            targets: ['name'],
             render: renderName,
             orderable: true,
         },
         {
-            targets: 3,
-            responsivePriority: 4,
+            targets: ['hostPermissions'],
             render: renderHosts,
             orderable: false,
         },
         {
-            targets: 4,
-            responsivePriority: 5,
+            targets: ['permissions'],
             render: renderPerms,
             orderable: false,
         },
@@ -159,6 +163,7 @@ const dtOptions = {
 
 let table
 let extOptions
+let extWhitelist
 
 /**
  * DOMContentLoaded
@@ -170,6 +175,10 @@ async function domContentLoaded() {
     const { options } = await chrome.storage.sync.get(['options'])
     extOptions = options
     console.debug('extOptions:', extOptions)
+
+    const { whitelist } = await chrome.storage.sync.get(['whitelist'])
+    extWhitelist = whitelist
+    console.debug('extWhitelist:', extWhitelist)
 
     const extensions = await getExtensions()
     console.debug('extensions:', extensions)
@@ -311,6 +320,21 @@ function renderButtons(data, type, row, meta) {
     return div
 }
 
+function renderWhitelist(data, type, row, meta) {
+    const div = document.createElement('div')
+    const input = document.createElement('input')
+    div.appendChild(input)
+    input.classList.add('form-check-input')
+    input.type = 'checkbox'
+    input.ariaLabel = 'Whitelist'
+    input.dataset.id = row.id
+    input.addEventListener('change', whitelistExtension)
+    if (data in extWhitelist) {
+        input.checked = true
+    }
+    return div
+}
+
 function renderHosts(data, type, row, meta) {
     const div = document.createElement('div')
     const number = extOptions.hostsDisplay
@@ -422,6 +446,30 @@ async function toggleExtension(event) {
         const id = event.target.dataset.id
         let info = await chrome.management.get(id)
         await chrome.management.setEnabled(id, !info.enabled)
+    } catch (e) {
+        showToast(e.toString(), 'danger')
+    }
+}
+
+async function whitelistExtension(event) {
+    console.debug('whitelistExtension:', event)
+    event.preventDefault()
+    try {
+        let { whitelist } = await chrome.storage.sync.get(['whitelist'])
+        console.debug('whitelist:', whitelist)
+        const id = event.target.dataset.id
+        console.debug('id:', id)
+        let info = await chrome.management.get(id)
+        console.debug('info:', info)
+        console.debug('event.target.checked:', event.target.checked)
+        if (event.target.checked) {
+            whitelist[id] = true
+        } else if (id in whitelist) {
+            delete whitelist[id]
+        }
+        console.debug('whitelist:', whitelist)
+        extWhitelist = whitelist
+        await chrome.storage.sync.set({ whitelist })
     } catch (e) {
         showToast(e.toString(), 'danger')
     }
