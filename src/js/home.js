@@ -50,7 +50,7 @@ const dtOptions = {
     },
     columns: [
         {
-            className: 'dt-control',
+            className: 'dt-control align-middle',
             orderable: false,
             data: null,
             defaultContent: '',

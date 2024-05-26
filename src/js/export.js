@@ -53,6 +53,9 @@ export async function saveOptions(event) {
  */
 export function updateOptions(options) {
     console.debug('updateOptions:', options)
+    document
+        .querySelectorAll('[id^="perm-"]')
+        .forEach((el) => (el.checked = false))
     for (let [key, value] of Object.entries(options)) {
         if (typeof value === 'undefined') {
             console.warn('Value undefined for key:', key)
