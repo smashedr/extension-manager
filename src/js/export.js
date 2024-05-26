@@ -1,10 +1,5 @@
 // JS Exports
 
-export const ignoreIDs = [
-    'extension-manager@cssnr.com',
-    'oefabhealjighoajlbikeabndmbghaih',
-]
-
 /**
  * Save Options Callback
  * @function saveOptions
@@ -325,7 +320,8 @@ export function appendClipSpan(
  */
 export async function processExtensionChange(info) {
     console.debug('processExtensionChange:', info)
-    if (ignoreIDs.includes(info.id)) {
+    const self = await chrome.management.getSelf()
+    if (info.id === self.id) {
         return console.debug('skipping self')
     }
     let ext

@@ -3,7 +3,6 @@
 import {
     activateOrOpen,
     getExtensions,
-    ignoreIDs,
     processExtensionChange,
     processPerms,
 } from './export.js'
@@ -333,7 +332,8 @@ async function extDisabled(info) {
  * @param {ExtensionInfo} info
  */
 async function addHistory(action, info) {
-    if (ignoreIDs.includes(info.id)) {
+    const self = await chrome.management.getSelf()
+    if (info.id === self.id) {
         return console.debug('skipping self')
     }
     if (info.type !== 'extension' || info.id.endsWith('@search.mozilla.org')) {

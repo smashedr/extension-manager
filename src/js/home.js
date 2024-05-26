@@ -486,6 +486,14 @@ async function toggleExtension(event) {
     try {
         const id = event.target.dataset.id
         let info = await chrome.management.get(id)
+        const self = await chrome.management.getSelf()
+        if (info.id === self.id) {
+            showToast(
+                'To Disable This Addon Visit the Extension Page.',
+                'danger'
+            )
+            return
+        }
         await chrome.management.setEnabled(id, !info.enabled)
         if (!info.enabled) {
             console.log('enabled')
