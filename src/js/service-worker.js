@@ -3,6 +3,7 @@
 import {
     activateOrOpen,
     getExtensions,
+    ignoreIDs,
     processExtensionChange,
     processPerms,
 } from './export.js'
@@ -270,18 +271,16 @@ async function setExtensions() {
  */
 async function extInstalled(info) {
     console.debug('extInstalled:', info)
-    const ext = await chrome.management.get(info.id)
-    console.debug('ext:', ext)
     let { installed } = await chrome.storage.local.get(['installed'])
     console.debug('installed:', installed)
-    if (ext.id in installed) {
-        await addHistory('update', ext)
+    if (info.id in installed) {
+        await addHistory('update', info)
     } else {
-        await addHistory('install', ext)
-        installed[ext.id] = true
+        await addHistory('install', info)
+        installed[info.id] = true
         await chrome.storage.local.set({ installed })
     }
-    await processExtensionChange(ext)
+    await processExtensionChange(info)
 }
 
 /**
@@ -334,7 +333,7 @@ async function extDisabled(info) {
  * @param {ExtensionInfo} info
  */
 async function addHistory(action, info) {
-    if (['extension-manager@cssnr.com'].includes(info.id)) {
+    if (ignoreIDs.includes(info.id)) {
         return console.debug('skipping self')
     }
     if (info.type !== 'extension' || info.id.endsWith('@search.mozilla.org')) {

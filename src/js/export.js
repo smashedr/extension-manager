@@ -1,5 +1,10 @@
 // JS Exports
 
+export const ignoreIDs = [
+    'extension-manager@cssnr.com',
+    'oefabhealjighoajlbikeabndmbghaih',
+]
+
 /**
  * Save Options Callback
  * @function saveOptions
@@ -178,7 +183,7 @@ export async function activateOrOpen(url, open = true) {
  * @param {String} message
  * @param {String} type
  */
-export function showToast(message, type = 'success') {
+export function showToast(message, type = 'info') {
     console.debug(`showToast: ${type}: ${message}`)
     const clone = document.querySelector('.d-none .toast')
     const container = document.getElementById('toast-container')
@@ -320,7 +325,17 @@ export function appendClipSpan(
  */
 export async function processExtensionChange(info) {
     console.debug('processExtensionChange:', info)
-    const ext = await chrome.management.get(info.id)
+    if (ignoreIDs.includes(info.id)) {
+        return console.debug('skipping self')
+    }
+    let ext
+    try {
+        ext = await chrome.management.get(info.id)
+    } catch (e) {
+        console.warn(e)
+        return
+    }
+    console.debug('ext:', ext)
     if (!ext.enabled || !ext.permissions?.length) {
         console.debug('disabled or no permissions')
         return

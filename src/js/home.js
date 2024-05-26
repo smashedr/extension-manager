@@ -210,8 +210,16 @@ async function domContentLoaded() {
 }
 
 async function updateExtensions() {
-    const extensions = await getExtensions()
-    console.debug('updateExtensions:', extensions)
+    console.debug('updateExtensions')
+    let extensions
+    try {
+        extensions = await getExtensions()
+    } catch (e) {
+        console.warn(e)
+        showToast(e.toString(), 'danger')
+        return
+    }
+    console.debug('extensions:', extensions)
     table.clear()
     table.rows.add(extensions).draw()
     window.dispatchEvent(new Event('resize'))
@@ -479,6 +487,13 @@ async function toggleExtension(event) {
         const id = event.target.dataset.id
         let info = await chrome.management.get(id)
         await chrome.management.setEnabled(id, !info.enabled)
+        if (!info.enabled) {
+            console.log('enabled')
+            showToast(`Enabled: ${info.name}`, 'success')
+        } else {
+            console.log('disabled')
+            showToast(`Disabled: ${info.name}`, 'warning')
+        }
     } catch (e) {
         showToast(e.toString(), 'danger')
     }
@@ -510,11 +525,15 @@ async function whitelistPermission(event) {
             if (!whitelist[id].length) {
                 delete whitelist[id]
             }
+            const msg = `Removed whitelist: <strong>${perm}</strong> for Extension: <strong>${id}</strong>`
+            showToast(msg, 'warning')
         } else {
             console.debug('add perm:', perm)
             whitelist[id].push(perm)
             // event.target.classList.add('text-success')
             event.target.className = 'text-success'
+            const msg = `Whitelisted: <strong>${perm}</strong> for Extension: <strong>${id}</strong>`
+            showToast(msg, 'success')
         }
         console.debug('whitelist:', whitelist)
         extWhitelist = whitelist
