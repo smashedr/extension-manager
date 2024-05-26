@@ -506,6 +506,9 @@ async function whitelistPermission(event) {
             if (extOptions.disablePerms.includes(perm)) {
                 event.target.classList.add('text-danger')
             }
+            if (!whitelist[id].length) {
+                delete whitelist[id]
+            }
         } else {
             console.debug('add perm:', perm)
             whitelist[id].push(perm)
