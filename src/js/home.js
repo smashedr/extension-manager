@@ -55,9 +55,10 @@ const dtOptions = {
             data: null,
             defaultContent: '',
             name: 'dt-control',
+            width: '20px',
         },
         { data: 'enabled', name: 'enabled', width: '48px' },
-        { data: 'manifest', name: 'manifest' },
+        { data: 'manifest', name: 'manifest', width: '78px' },
         // { data: 'id', name: 'whitelist', width: '28px' },
         { data: 'name', name: 'name' },
         { data: 'hostPermissions', name: 'hostPermissions' },
@@ -379,7 +380,7 @@ function renderHosts(data, type, row, meta) {
     }
     if (data.length > number) {
         const text = `+${data.length - number} More...`
-        appendClipSpan(div, text, false, false, ['text-danger'])
+        appendClipSpan(div, text, false, false, ['text-warning'])
     }
     return div
 
