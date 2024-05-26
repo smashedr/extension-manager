@@ -33,7 +33,12 @@ export async function saveOptions(event) {
     } else if (event.target.type === 'checkbox') {
         value = event.target.checked
     } else if (event.target.type === 'number') {
-        value = parseInt(event.target.value)
+        const number = parseInt(event.target.value)
+        if (!isNaN(number) && number >= 1) {
+            value = number
+        } else {
+            value = options[key]
+        }
     } else {
         value = event.target.value
     }
