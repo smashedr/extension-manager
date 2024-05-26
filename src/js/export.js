@@ -316,22 +316,28 @@ export function appendClipSpan(
 export async function processExtensionChange(info) {
     console.debug('processExtensionChange:', info)
     const ext = await chrome.management.get(info.id)
-    if (!ext.enabled || !ext.permissions) {
-        // console.debug('disabled or no permissions')
+    if (!ext.enabled || !ext.permissions?.length) {
+        console.debug('disabled or no permissions')
         return
     }
     const { whitelist } = await chrome.storage.sync.get(['whitelist'])
+    // console.debug('whitelist:', whitelist)
     // if (info.id in whitelist) {
     //     console.debug('extension in whitelist:', info.id)
     //     return
     // }
     const { options } = await chrome.storage.sync.get(['options'])
-    if (options.disablePerms) {
+    if (options.autoDisable || !options.disablePerms?.length) {
+        console.debug('options:', options.autoDisable, options.disablePerms)
         const perms = []
         for (const perm of ext.permissions) {
             if (options.disablePerms.includes(perm)) {
-                if (whitelist[info.id] && !whitelist[info.id]?.includes(perm))
+                console.debug('disable perm:', perm)
+                if (whitelist[info.id]?.includes(perm)) {
+                    console.debug('whitelisted:', perm)
+                } else {
                     perms.push(perm)
+                }
             }
         }
         if (perms.length) {
