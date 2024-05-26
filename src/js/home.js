@@ -2,6 +2,8 @@
 
 import { appendClipSpan, getExtensions, showToast } from './export.js'
 
+chrome.storage.onChanged.addListener(onChanged)
+
 chrome.management.onInstalled.addListener(updateExtensions)
 chrome.management.onUninstalled.addListener(updateExtensions)
 chrome.management.onEnabled.addListener(updateExtensions)
@@ -206,10 +208,9 @@ async function domContentLoaded() {
     // }
 }
 
-async function updateExtensions(info) {
-    console.info('updateExtensions:', info)
+async function updateExtensions() {
     const extensions = await getExtensions()
-    console.debug('extensions:', extensions)
+    console.debug('updateExtensions:', extensions)
     table.clear()
     table.rows.add(extensions).draw()
     window.dispatchEvent(new Event('resize'))
@@ -542,3 +543,24 @@ async function whitelistPermission(event) {
 //         showToast(e.toString(), 'danger')
 //     }
 // }
+
+/**
+ * On Changed Callback
+ * @function onChanged
+ * @param {Object} changes
+ * @param {String} namespace
+ */
+async function onChanged(changes, namespace) {
+    console.debug('onChanged:', changes, namespace)
+    for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
+        if (namespace === 'sync' && key === 'whitelist' && newValue) {
+            extWhitelist = newValue
+        }
+        if (namespace === 'sync' && key === 'options' && oldValue && newValue) {
+            extOptions = newValue
+            if (oldValue.disablePerms.length !== newValue.disablePerms.length) {
+                await updateExtensions()
+            }
+        }
+    }
+}
