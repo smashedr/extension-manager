@@ -54,18 +54,27 @@ For more information on regex, see: https://regex101.com/
 
 **Quick Start**
 
-To install and run chrome or firefox with web-ext.
+First, clone (or download) this repository and change into the directory.
+
+Second, install the dependencies:
 ```shell
-npm isntall
+npm install
+```
+
+Finally, to run Chrome or Firefox with web-ext, run one of the following:
+```shell
 npm run chrome
 npm run firefox
 ```
 
-To Load Unpacked/Temporary Add-on make a `manifest.json` and run from the [src](src) folder.
+Additionally, to Load Unpacked/Temporary Add-on make a `manifest.json` and run from the [src](src) folder, run one of the following:
 ```shell
 npm run manifest:chrome
 npm run manifest:firefox
 ```
+
+Chrome: [https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked)  
+Firefox: [https://extensionworkshop.com/documentation/develop/temporary-installation-in-firefox/](https://extensionworkshop.com/documentation/develop/temporary-installation-in-firefox/)
 
 For more information on web-ext, [read this documentation](https://extensionworkshop.com/documentation/develop/web-ext-command-reference/).  
 To pass additional arguments to an `npm run` command, use `--`.  
