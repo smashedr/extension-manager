@@ -1,6 +1,6 @@
 {
   "name": "Extension Manager",
-  "description": "Simple Web Extension Example.",
+  "description": "Extension Manager for Chrome and Firefox.",
   "homepage_url": "https://github.com/smashedr/extension-manager",
   "author": "Shane",
   "version": "0.0.1",
