@@ -5,6 +5,7 @@ import {
     getExtensions,
     processExtensionChange,
     processPerms,
+    sendNotification,
 } from './export.js'
 
 chrome.runtime.onStartup.addListener(onStartup)
@@ -12,6 +13,7 @@ chrome.runtime.onInstalled.addListener(onInstalled)
 chrome.contextMenus.onClicked.addListener(onClicked)
 chrome.commands.onCommand.addListener(onCommand)
 chrome.storage.onChanged.addListener(onChanged)
+chrome.runtime.onMessage.addListener(onMessage)
 chrome.notifications.onClicked.addListener(notificationsClicked)
 
 chrome.management.onInstalled.addListener(extInstalled)
@@ -143,6 +145,21 @@ function onChanged(changes, namespace) {
                 }
             }
         }
+    }
+}
+
+/**
+ * On Message Callback
+ * @function onMessage
+ * @param {Object} message
+ * @param {MessageSender} sender
+ * @param {Function} sendResponse
+ */
+function onMessage(message, sender, sendResponse) {
+    console.debug('onMessage: message, sender:', message, sender)
+    if (message.notification) {
+        sendNotification(message.title, message.text, message.id)
+        // sendResponse('ok')
     }
 }
 

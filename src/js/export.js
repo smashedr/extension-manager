@@ -383,12 +383,13 @@ export async function processPerms(event) {
     const { options } = await chrome.storage.sync.get(['options'])
     if (!options.autoDisable || !options.disablePerms?.length) {
         if (event) {
-            console.debug('send notification for event')
-            await sendNotification(
-                'Disabled Perms Not Configured',
-                'You have not configured any disable permissions in Options.',
-                'options'
-            )
+            console.debug('send notification for event - to SW for Chrome')
+            await chrome.runtime.sendMessage({
+                notification: true,
+                title: 'Disabled Perms Not Configured',
+                text: 'You have not configured any disable permissions in Options',
+                id: 'options',
+            })
         }
         window.close()
         return console.debug('autoDisable disabled or no disablePerms')
