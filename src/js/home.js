@@ -449,9 +449,13 @@ function renderPerms(data, type, row, meta) {
         span.textContent = perm
         if (extWhitelist[row.id]?.includes(perm)) {
             span.classList.add('text-success')
-        } else if (extOptions.disablePerms.includes(perm)) {
+        } else if (
+            extOptions.autoDisable &&
+            extOptions.disablePerms.includes(perm)
+        ) {
             span.classList.add('text-danger')
         }
+
         span.setAttribute('role', 'button')
         span.addEventListener('click', whitelistPermission)
         div.appendChild(span)
@@ -589,6 +593,9 @@ async function onChanged(changes, namespace) {
         }
         if (namespace === 'sync' && key === 'options' && oldValue && newValue) {
             extOptions = newValue
+            if (oldValue.autoDisable !== newValue.autoDisable) {
+                await updateExtensions()
+            }
             if (oldValue.disablePerms.length !== newValue.disablePerms.length) {
                 await updateExtensions()
             }
