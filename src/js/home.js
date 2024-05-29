@@ -132,7 +132,8 @@ const dtOptions = {
                         title: null,
                         exportOptions: {
                             orthogonal: 'export',
-                            columns: ':visible',
+                            columns:
+                                ':visible:not(:first-child):not(:nth-child(2)):not(:nth-child(3))',
                         },
                     },
                     {
@@ -143,7 +144,7 @@ const dtOptions = {
                         exportOptions: {
                             orthogonal: 'export',
                             columns:
-                                ':visible:not(:first-child):not(:nth-child(2))',
+                                ':visible:not(:first-child):not(:nth-child(2)):not(:nth-child(3))',
                         },
                     },
                     {
@@ -152,9 +153,8 @@ const dtOptions = {
                         // className: 'btn-primary',
                         exportOptions: {
                             orthogonal: 'export',
-                            // columns: ':visible:not(:eq(0)):not(:eq(0))',
                             columns:
-                                ':visible:not(:first-child):not(:nth-child(2))',
+                                ':visible:not(:first-child):not(:nth-child(2)):not(:nth-child(3))',
                         },
                     },
                     {
@@ -164,7 +164,7 @@ const dtOptions = {
                         exportOptions: {
                             orthogonal: 'export',
                             columns:
-                                ':visible:not(:first-child):not(:nth-child(2))',
+                                ':visible:not(:first-child):not(:nth-child(2)):not(:nth-child(3))',
                         },
                     },
                 ],
