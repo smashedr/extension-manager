@@ -12,6 +12,7 @@
   },
   "rules": {
     "no-extra-semi": "off",
-    "no-undef": "off"
+    "no-undef": "off",
+    "no-unused-vars": "off"
   }
 }

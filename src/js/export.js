@@ -173,6 +173,20 @@ export async function activateOrOpen(url, open = true) {
 }
 
 /**
+ * Update DOM with Manifest Details
+ * @function updateManifest
+ */
+export function updateManifest() {
+    const manifest = chrome.runtime.getManifest()
+    document
+        .querySelectorAll('.version')
+        .forEach((el) => (el.textContent = manifest.version))
+    document
+        .querySelectorAll('[href="homepage_url"]')
+        .forEach((el) => (el.href = manifest.homepage_url))
+}
+
+/**
  * Show Bootstrap Toast
  * @function showToast
  * @param {String} message

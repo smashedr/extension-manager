@@ -1,11 +1,11 @@
 // JS for popup.html
 
 import {
-    activateOrOpen,
     linkClick,
     processPerms,
     saveOptions,
     showToast,
+    updateManifest,
     updateOptions,
 } from './export.js'
 
@@ -31,9 +31,7 @@ document
  */
 async function initPopup() {
     console.debug('initPopup')
-    const manifest = chrome.runtime.getManifest()
-    document.querySelector('.version').textContent = manifest.version
-    document.querySelector('[href="homepage_url"]').href = manifest.homepage_url
+    updateManifest()
 
     const { options } = await chrome.storage.sync.get(['options'])
     console.debug('options:', options)
@@ -42,38 +40,4 @@ async function initPopup() {
     if (chrome.runtime.lastError) {
         showToast(chrome.runtime.lastError.message, 'warning')
     }
-}
-
-/**
- * Popup Links Click Callback
- * Firefox requires a call to window.close()
- * @function popupLinks
- * @param {MouseEvent} event
- */
-async function popupLinks(event) {
-    console.debug('popupLinks:', event)
-    event.preventDefault()
-    const anchor = event.target.closest('a')
-    const href = anchor.getAttribute('href').replace(/^\.+/g, '')
-    console.debug('href:', href)
-    let url
-    if (href.endsWith('html/options.html')) {
-        chrome.runtime.openOptionsPage()
-        return window.close()
-    } else if (href.endsWith('html/panel.html')) {
-        await chrome.windows.create({
-            type: 'panel',
-            url: '/html/panel.html',
-            width: 720,
-            height: 480,
-        })
-        return window.close()
-    } else if (href.startsWith('http')) {
-        url = href
-    } else {
-        url = chrome.runtime.getURL(href)
-    }
-    console.debug('url:', url)
-    await activateOrOpen(url)
-    return window.close()
 }
