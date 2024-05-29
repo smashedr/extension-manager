@@ -261,7 +261,7 @@ async function setExtensions() {
     const installed = {}
     for (const info of extensions) {
         // console.log('info:', info)
-        installed[info.id] = true
+        installed[info.id] = info
         // if (!(info.id in alltime)) {
         //     // console.debug('add alltime:', info)
         //     changed = true
@@ -293,28 +293,31 @@ async function extInstalled(info) {
         await addHistory('update', info)
     } else {
         await addHistory('install', info)
-        installed[info.id] = true
-        await chrome.storage.local.set({ installed })
     }
+    installed[info.id] = info
+    await chrome.storage.local.set({ installed })
     await processExtensionChange(info)
 }
 
 /**
  * Extension Uninstalled Callback
  * @function extUninstalled
- * @param {ExtensionInfo} info
+ * @param {String} id
  */
-async function extUninstalled(info) {
-    console.debug('extUninstalled:', info)
-    const ext = await chrome.management.get(info.id)
-    console.debug('ext:', ext)
+async function extUninstalled(id) {
+    console.debug('extUninstalled: id:', id)
+    // const ext = await chrome.management.get(info.id)
+    // console.debug('ext:', ext)
     let { installed } = await chrome.storage.local.get(['installed'])
-    if (ext.id in installed) {
-        if (delete installed[ext.id]) {
+    const info = installed[id]
+    if (info) {
+        if (delete installed[id]) {
             await chrome.storage.local.set({ installed })
         }
+        await addHistory('uninstall', info)
+    } else {
+        console.warn('No info for id:', id)
     }
-    await addHistory('uninstall', ext)
 }
 
 /**
@@ -349,14 +352,14 @@ async function extDisabled(info) {
  * @param {ExtensionInfo} info
  */
 async function addHistory(action, info) {
+    console.log(`addHistory: ${action}:`, info)
     const self = await chrome.management.getSelf()
     if (info.id === self.id) {
         return console.debug('skipping self')
     }
     if (info.type !== 'extension' || info.id.endsWith('@search.mozilla.org')) {
-        return console.debug('skipping non-extension', info)
+        return console.debug('skipping non-extension:', info)
     }
-    console.log(`addHistory: ${action}:`, info)
     let { history } = await chrome.storage.local.get(['history'])
     info.action = action
     info.date = Date.now()
