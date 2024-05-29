@@ -39,10 +39,17 @@
     </table>
     <hr>
     <form id="options-form" class="options">
-        <div class="col-sm-4 col-12 mb-2">
-            <label for="hostsDisplay" class="form-label"><i class="fa-solid fa-list-ol me-2"></i> Hosts to Display</label>
-            <input id="hostsDisplay" aria-describedby="hostsDisplayHelp" type="number" class="form-control" autocomplete="off">
-            <div class="form-text" id="hostsDisplayHelp"># of Host Perms to Show.</div>
+        <div class="row">
+            <div class="col-sm-4 col-12 mb-2">
+                <label for="hostsDisplay" class="form-label"><i class="fa-solid fa-list-ol me-2"></i> Hosts to Display</label>
+                <input id="hostsDisplay" aria-describedby="hostsDisplayHelp" type="number" class="form-control" autocomplete="off">
+                <div class="form-text" id="hostsDisplayHelp">Host Perms displayed.</div>
+            </div>
+            <div class="col-sm-4 col-12 mb-2">
+                <label for="historyMax" class="form-label"><i class="fa-solid fa-list-ol me-2"></i> History Length</label>
+                <input id="historyMax" aria-describedby="historyMaxHelp" type="number" class="form-control" autocomplete="off">
+                <div class="form-text" id="historyMaxHelp">History Items Stored.</div>
+            </div>
         </div>
 
         <div class="form-check form-switch">

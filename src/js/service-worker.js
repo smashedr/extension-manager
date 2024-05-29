@@ -50,6 +50,7 @@ async function onInstalled(details) {
     const options = await Promise.resolve(
         setDefaultOptions({
             hostsDisplay: 4,
+            historyMax: 500,
             autoDisable: false,
             disablePerms: ['downloads.open'],
             contextMenu: true,
@@ -364,7 +365,10 @@ async function addHistory(action, info) {
     info.action = action
     info.date = Date.now()
     history.push(info)
-    // console.debug('history:', history)
+    let { options } = await chrome.storage.sync.get(['options'])
+    if (history.length > options.historyMax) {
+        history.splice(0, history.length - options.historyMax)
+    }
     await chrome.storage.local.set({ history })
 
     // // console.debug('update alltime:', info)
