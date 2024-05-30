@@ -16,6 +16,12 @@ document.querySelectorAll('.open-options').forEach((el) =>
         chrome.runtime.openOptionsPage()
     })
 )
+document.querySelectorAll('.process-perms').forEach((el) =>
+    el.addEventListener('click', (e) => {
+        e.preventDefault()
+        chrome.runtime.sendMessage('processPerms')
+    })
+)
 
 const backToTop = document.getElementById('back-to-top')
 if (backToTop) {

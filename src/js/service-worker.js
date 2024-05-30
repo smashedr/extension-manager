@@ -11,8 +11,8 @@ import {
 chrome.runtime.onStartup.addListener(onStartup)
 chrome.runtime.onInstalled.addListener(onInstalled)
 chrome.contextMenus.onClicked.addListener(onClicked)
-chrome.commands.onCommand.addListener(onCommand)
 chrome.storage.onChanged.addListener(onChanged)
+chrome.commands.onCommand.addListener(onCommand)
 chrome.runtime.onMessage.addListener(onMessage)
 chrome.notifications.onClicked.addListener(notificationsClicked)
 
@@ -36,7 +36,7 @@ async function onStartup() {
         }
     }
     await setExtensions()
-    await processPerms()
+    await processPerms(true)
 }
 
 /**
@@ -107,26 +107,6 @@ async function onClicked(ctx, tab) {
 }
 
 /**
- * On Command Callback
- * @function onCommand
- * @param {String} command
- */
-async function onCommand(command) {
-    console.debug(`onCommand: ${command}`)
-    if (command === 'openHome') {
-        const url = chrome.runtime.getURL('/html/home.html')
-        activateOrOpen(url)
-    } else if (command === 'showPanel') {
-        await chrome.windows.create({
-            type: 'panel',
-            url: '/html/panel.html',
-            width: 480,
-            height: 360,
-        })
-    }
-}
-
-/**
  * On Changed Callback
  * @function onChanged
  * @param {Object} changes
@@ -150,6 +130,26 @@ function onChanged(changes, namespace) {
 }
 
 /**
+ * On Command Callback
+ * @function onCommand
+ * @param {String} command
+ */
+async function onCommand(command) {
+    console.debug(`onCommand: ${command}`)
+    if (command === 'openHome') {
+        const url = chrome.runtime.getURL('/html/home.html')
+        activateOrOpen(url)
+    } else if (command === 'showPanel') {
+        await chrome.windows.create({
+            type: 'panel',
+            url: '/html/panel.html',
+            width: 480,
+            height: 360,
+        })
+    }
+}
+
+/**
  * On Message Callback
  * @function onMessage
  * @param {Object} message
@@ -160,8 +160,11 @@ function onMessage(message, sender, sendResponse) {
     console.debug('onMessage: message, sender:', message, sender)
     if (message.notification) {
         sendNotification(message.title, message.text, message.id)
-        // sendResponse('ok')
+    } else if (message === 'processPerms') {
+        console.log('command: processPerms')
+        processPerms()
     }
+    // sendResponse('ok')
 }
 
 /**

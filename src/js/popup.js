@@ -16,14 +16,18 @@ document
         el.addEventListener('click', (event) => linkClick(event, true))
     )
 document
-    .querySelectorAll('.process-perms')
-    .forEach((el) => el.addEventListener('click', processPerms))
-document
     .querySelectorAll('#options-form input')
     .forEach((el) => el.addEventListener('change', saveOptions))
 document
     .querySelectorAll('[data-bs-toggle="tooltip"]')
     .forEach((el) => new bootstrap.Tooltip(el))
+document.querySelectorAll('.process-perms').forEach((el) =>
+    el.addEventListener('click', (e) => {
+        e.preventDefault()
+        chrome.runtime.sendMessage('processPerms')
+        window.close()
+    })
+)
 
 /**
  * Initialize Popup

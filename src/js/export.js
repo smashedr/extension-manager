@@ -384,19 +384,18 @@ export async function processExtensionChange(info) {
             await sendNotification('Disabled Extension', msg, 'home')
         }
     }
+    console.debug('processExtensionChange: FINISHED')
 }
 
 /**
- * TODO: Split This into an Event Listener and Function
  * @function processPerms
- * @param {MouseEvent} [event]
+ * @param {Boolean} [notifyDisabled]
  */
-export async function processPerms(event) {
-    console.debug('processPerms:', event)
-    event?.preventDefault()
+export async function processPerms(notifyDisabled) {
+    console.debug('processPerms:', notifyDisabled)
     const { options } = await chrome.storage.sync.get(['options'])
     if (!options.autoDisable || !options.disablePerms?.length) {
-        if (event) {
+        if (notifyDisabled) {
             console.debug('send notification for event - to SW for Chrome')
             await chrome.runtime.sendMessage({
                 notification: true,
@@ -405,14 +404,11 @@ export async function processPerms(event) {
                 id: 'options',
             })
         }
-        window.close()
         return console.debug('autoDisable disabled or no disablePerms')
     }
     console.debug('proceed')
     const extensions = await getExtensions()
-    // console.debug('processPerms:', extensions)
     for (const info of extensions) {
         await processExtensionChange(info)
     }
-    if (event) window.close()
 }
