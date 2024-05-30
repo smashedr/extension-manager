@@ -10,6 +10,13 @@ let html = document.querySelector('html')
 html.classList.add(prefers)
 html.setAttribute('data-bs-theme', prefers)
 
+document.querySelectorAll('.open-options').forEach((el) =>
+    el.addEventListener('click', (e) => {
+        e.preventDefault()
+        chrome.runtime.openOptionsPage()
+    })
+)
+
 const backToTop = document.getElementById('back-to-top')
 if (backToTop) {
     window.addEventListener('scroll', debounce(onScroll))
