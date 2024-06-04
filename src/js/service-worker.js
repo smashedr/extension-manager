@@ -52,7 +52,7 @@ async function onInstalled(details) {
             hostsDisplay: 4,
             historyMax: 500,
             autoDisable: false,
-            disablePerms: ['downloads.open'],
+            disablePerms: ['nativeMessaging', 'downloads.open'],
             contextMenu: true,
             showUpdate: false,
         })
