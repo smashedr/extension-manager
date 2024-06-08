@@ -36,7 +36,7 @@ async function onStartup() {
         }
     }
     await setExtensions()
-    await processPerms(true)
+    await processPerms()
 }
 
 /**
