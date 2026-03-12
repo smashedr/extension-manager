@@ -2,7 +2,6 @@
 
 import {
     linkClick,
-    processPerms,
     saveOptions,
     showToast,
     updateManifest,
@@ -12,9 +11,7 @@ import {
 document.addEventListener('DOMContentLoaded', initPopup)
 document
     .querySelectorAll('a[href]')
-    .forEach((el) =>
-        el.addEventListener('click', (event) => linkClick(event, true))
-    )
+    .forEach((el) => el.addEventListener('click', (event) => linkClick(event, true)))
 document
     .querySelectorAll('#options-form input')
     .forEach((el) => el.addEventListener('change', saveOptions))
@@ -24,9 +21,9 @@ document
 document.querySelectorAll('.process-perms').forEach((el) =>
     el.addEventListener('click', (e) => {
         e.preventDefault()
-        chrome.runtime.sendMessage('processPerms')
+        chrome.runtime.sendMessage('processPerms').catch((e) => console.log(e))
         window.close()
-    })
+    }),
 )
 
 /**

@@ -332,10 +332,7 @@ function renderName(data, type, row, meta) {
     // ID / UUID
     appendClipSpan(div, `${row.id} `, true, true, ['text-nowrap'])
     if (row.uuid !== row.id) {
-        appendClipSpan(div, row.uuid, true, true, [
-            'text-nowrap',
-            'text-dark-emphasis',
-        ])
+        appendClipSpan(div, row.uuid, true, true, ['text-nowrap', 'text-dark-emphasis'])
     }
     return div
 }
@@ -449,10 +446,7 @@ function renderPerms(data, type, row, meta) {
         span.textContent = perm
         if (extWhitelist[row.id]?.includes(perm)) {
             span.classList.add('text-success')
-        } else if (
-            extOptions.autoDisable &&
-            extOptions.disablePerms.includes(perm)
-        ) {
+        } else if (extOptions.autoDisable && extOptions.disablePerms.includes(perm)) {
             span.classList.add('text-danger')
         }
 
@@ -492,10 +486,7 @@ async function toggleExtension(event) {
         let info = await chrome.management.get(id)
         const self = await chrome.management.getSelf()
         if (info.id === self.id) {
-            showToast(
-                'To Disable This Addon Visit the Extension Page.',
-                'danger'
-            )
+            showToast('To Disable This Addon Visit the Extension Page.', 'danger')
             return
         }
         await chrome.management.setEnabled(id, !info.enabled)

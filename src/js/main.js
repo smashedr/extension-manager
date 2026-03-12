@@ -3,9 +3,7 @@
 import { showToast } from './export.js'
 
 // Manually Set Theme for DataTables
-let prefers = window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light'
+let prefers = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 let html = document.querySelector('html')
 html.classList.add(prefers)
 html.setAttribute('data-bs-theme', prefers)
@@ -14,13 +12,13 @@ document.querySelectorAll('.open-options').forEach((el) =>
     el.addEventListener('click', (e) => {
         e.preventDefault()
         chrome.runtime.openOptionsPage()
-    })
+    }),
 )
 document.querySelectorAll('.process-perms').forEach((el) =>
     el.addEventListener('click', (e) => {
         e.preventDefault()
         chrome.runtime.sendMessage('processPerms')
-    })
+    }),
 )
 
 const backToTop = document.getElementById('back-to-top')
@@ -55,10 +53,7 @@ if (typeof ClipboardJS !== 'undefined') {
  * @function onScroll
  */
 function onScroll() {
-    if (
-        document.body.scrollTop > 20 ||
-        document.documentElement.scrollTop > 20
-    ) {
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
         backToTop.style.display = 'block'
     } else {
         backToTop.style.display = 'none'
