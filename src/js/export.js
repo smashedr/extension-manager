@@ -5,7 +5,7 @@
  * @function saveOptions
  * @param {InputEvent} event
  */
-export async function saveOptions(event) {
+export async function saveOptions(event) /* NOSONAR */ {
     console.debug('saveOptions:', event)
     const { options } = await chrome.storage.sync.get(['options'])
     let key = event.target.id
@@ -56,11 +56,9 @@ export async function saveOptions(event) {
  * @function initOptions
  * @param {Object} options
  */
-export function updateOptions(options) {
+export function updateOptions(options) /* NOSONAR */ {
     console.debug('updateOptions:', options)
-    document
-        .querySelectorAll('[id^="perm-"]')
-        .forEach((el) => (el.checked = false))
+    document.querySelectorAll('[id^="perm-"]').forEach((el) => (el.checked = false))
     for (let [key, value] of Object.entries(options)) {
         if (typeof value === 'undefined') {
             console.warn('Value undefined for key:', key)
@@ -77,8 +75,8 @@ export function updateOptions(options) {
             continue
         }
         if (key.startsWith('radio')) {
-            key = value
-            value = true
+            key = value // NOSONAR
+            value = true // NOSONAR
         }
         // console.debug(`${key}: ${value}`)
         const el = document.getElementById(key)
@@ -152,9 +150,9 @@ export async function linkClick(event, close = false) {
 /**
  * Activate or Open Tab from URL
  * @function activateOrOpen
- * @param {String} url
- * @param {Boolean} [open]
- * @return {Boolean}
+ * @param {string} url
+ * @param {boolean} [open]
+ * @return {Promise<void>}
  */
 export async function activateOrOpen(url, open = true) {
     console.debug('activateOrOpen:', url)
@@ -238,17 +236,14 @@ export async function sendNotification(title, text, id = '', timeout = 30) {
 /**
  * Update History Table
  * @function getExtensions
- * @return  {Array}
+ * @return  {Promise<chrome.management.ExtensionInfo[]>}
  */
 export async function getExtensions() {
     console.debug('getExtensions')
     const extensions = await chrome.management.getAll()
     const results = []
     for (const info of extensions) {
-        if (
-            info.type !== 'extension' ||
-            info.id.endsWith('@search.mozilla.org')
-        ) {
+        if (info.type !== 'extension' || info.id.endsWith('@search.mozilla.org')) {
             continue
         }
         const hostPermissions = []
@@ -276,6 +271,7 @@ export async function getExtensions() {
 
 function browserSpec(key) {
     let data
+    // noinspection JSUnresolvedReference
     if (chrome.runtime.getBrowserInfo) {
         // console.debug('Firefox')
         data = {
@@ -303,13 +299,7 @@ function getIconUrl(icons, size = 32) {
     return icons[0].url
 }
 
-export function appendClipSpan(
-    parent,
-    text,
-    clip = false,
-    br = false,
-    classes = []
-) {
+export function appendClipSpan(parent, text, clip = false, br = false, classes = []) {
     if (!text) {
         return
     }
@@ -330,9 +320,9 @@ export function appendClipSpan(
 /**
  * Extension Disabled Callback
  * @function processExtensionChange
- * @param {ExtensionInfo} info
+ * @param {chrome.management.ExtensionInfo} info
  */
-export async function processExtensionChange(info) {
+export async function processExtensionChange(info) /* NOSONAR */ {
     console.debug('processExtensionChange:', info)
     const self = await chrome.management.getSelf()
     if (info.id === self.id) {

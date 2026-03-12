@@ -42,7 +42,10 @@ gulp.task('fontawesome', () => {
                 'node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-*',
                 'node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-*',
             ],
-            { base: 'node_modules/@fortawesome/fontawesome-free' }
+            {
+                base: 'node_modules/@fortawesome/fontawesome-free',
+                encoding: false,
+            },
         )
         .pipe(gulp.dest('src/dist/fontawesome'))
 })
@@ -77,6 +80,6 @@ gulp.task(
         'fontawesome',
         'jquery',
         'moment',
-        'pdfmake'
-    )
+        'pdfmake',
+    ),
 )

@@ -27,7 +27,8 @@ chrome.management.onDisabled.addListener(extDisabled)
  */
 async function onStartup() {
     console.log('onStartup')
-    if (typeof browser !== 'undefined') {
+    // noinspection JSUnresolvedReference
+    if (chrome.runtime.getBrowserInfo) {
         console.log('Firefox CTX Menu Workaround')
         const { options } = await chrome.storage.sync.get(['options'])
         console.debug('options:', options)
@@ -55,7 +56,7 @@ async function onInstalled(details) {
             disablePerms: ['downloads.open'],
             contextMenu: true,
             showUpdate: false,
-        })
+        }),
     )
     console.debug('options:', options)
     if (options.contextMenu) {
@@ -90,10 +91,10 @@ async function onClicked(ctx, tab) {
         chrome.runtime.openOptionsPage()
     } else if (ctx.menuItemId === 'openHome') {
         const url = chrome.runtime.getURL('/html/home.html')
-        activateOrOpen(url)
+        await activateOrOpen(url)
     } else if (ctx.menuItemId === 'openHistory') {
         const url = chrome.runtime.getURL('/html/history.html')
-        activateOrOpen(url)
+        await activateOrOpen(url)
     } else if (ctx.menuItemId === 'showPanel') {
         await chrome.windows.create({
             type: 'panel',
@@ -138,7 +139,7 @@ async function onCommand(command) {
     console.debug(`onCommand: ${command}`)
     if (command === 'openHome') {
         const url = chrome.runtime.getURL('/html/home.html')
-        activateOrOpen(url)
+        await activateOrOpen(url)
     } else if (command === 'showPanel') {
         await chrome.windows.create({
             type: 'panel',
@@ -154,17 +155,17 @@ async function onCommand(command) {
  * @function onMessage
  * @param {Object} message
  * @param {MessageSender} sender
- * @param {Function} sendResponse
  */
-function onMessage(message, sender, sendResponse) {
+function onMessage(message, sender) {
     console.debug('onMessage: message, sender:', message, sender)
     if (message.notification) {
-        sendNotification(message.title, message.text, message.id)
+        sendNotification(message.title, message.text, message.id).catch((e) =>
+            console.warn(e),
+        )
     } else if (message === 'processPerms') {
         console.log('command: processPerms')
-        processPerms()
+        processPerms().catch((e) => console.log(e))
     }
-    // sendResponse('ok')
 }
 
 /**
@@ -180,7 +181,7 @@ async function notificationsClicked(notificationId) {
     } else if (notificationId.startsWith('home')) {
         const url = chrome.runtime.getURL('/html/home.html')
         console.debug('url:', url)
-        activateOrOpen(url)
+        await activateOrOpen(url)
     }
 }
 
@@ -199,6 +200,7 @@ function createContextMenus() {
         [['all'], 'openOptions', 'normal', 'Open Options'],
     ]
     contexts.forEach((context) => {
+        // noinspection JSCheckFunctionSignatures
         chrome.contextMenus.create({
             contexts: context[0],
             id: context[1],
@@ -287,7 +289,7 @@ async function setExtensions() {
 /**
  * Extension Installed Callback
  * @function extInstalled
- * @param {ExtensionInfo} info
+ * @param {chrome.management.ExtensionInfo} info
  */
 async function extInstalled(info) {
     console.debug('extInstalled:', info)
@@ -365,7 +367,9 @@ async function addHistory(action, info) {
         return console.debug('skipping non-extension:', info)
     }
     let { history } = await chrome.storage.local.get(['history'])
+    // noinspection JSUndefinedPropertyAssignment
     info.action = action
+    // noinspection JSUndefinedPropertyAssignment
     info.date = Date.now()
     history.push(info)
     let { options } = await chrome.storage.sync.get(['options'])

@@ -1,11 +1,6 @@
 // JS for options.html
 
-import {
-    linkClick,
-    saveOptions,
-    updateManifest,
-    updateOptions,
-} from './export.js'
+import { linkClick, saveOptions, updateManifest, updateOptions } from './export.js'
 
 chrome.storage.onChanged.addListener(onChanged)
 
